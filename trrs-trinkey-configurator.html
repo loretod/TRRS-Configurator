@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎧 TRRS Trinkey Configurator</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eeecea;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --radius: 8px; --radius-lg: 12px;
+    --blue: #378add; --green: #1D9E75; --purple: #7F77DD; --coral: #D85A30;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c; --bg2: #2a2a28; --bg3: #333330;
+      --text: #f0ede8; --text2: #a0a09a; --text3: #666662;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+    }
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; font-size: 15px; color: var(--text); background: var(--bg3); min-height: 100vh; }
+  .container { max-width: 760px; margin: 0 auto; padding: 2rem 1rem; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  h2 { font-size: 15px; font-weight: 500; margin-bottom: 10px; color: var(--text); }
+  .subtitle { color: var(--text2); font-size: 13px; margin-bottom: 1.5rem; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .tab-btn {
+    padding: 7px 16px; font-size: 13px; border-radius: var(--radius);
+    cursor: pointer; border: 0.5px solid var(--border2);
+    background: var(--bg2); color: var(--text2); font-family: inherit;
+    display: flex; align-items: center; gap: 7px; transition: background 0.1s;
+  }
+  .tab-btn:hover { background: var(--bg3); }
+  .tab-btn.active { background: var(--bg); color: var(--text); border-color: var(--border2); font-weight: 500; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .pin-card {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px;
+  }
+  .pin-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .pin-badge { font-size: 11px; font-weight: 400; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 7px; color: var(--text2); font-family: monospace; }
+  .row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .row label { font-size: 13px; color: var(--text2); min-width: 90px; padding-top: 7px; }
+  .row .field { flex: 1; min-width: 160px; }
+  select, input[type=text] {
+    font-size: 13px; padding: 6px 10px; border-radius: var(--radius);
+    border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text);
+    font-family: inherit; width: 100%;
+  }
+  select:focus, input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .key-list { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .key-tag {
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius); padding: 4px 10px; font-size: 12px;
+    display: flex; align-items: center; gap: 6px; font-family: monospace;
+  }
+  .key-tag button { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; padding: 0; font-family: inherit; }
+  .key-tag button:hover { color: var(--text); }
+  .add-key-row { display: flex; gap: 6px; align-items: center; }
+  .add-key-row select { width: auto; flex: 1; }
+  .btn {
+    padding: 8px 18px; font-size: 13px; border-radius: var(--radius);
+    border: 0.5px solid var(--border2); background: var(--bg2);
+    color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.1s;
+  }
+  .btn:hover { background: var(--bg3); }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn-primary:hover { opacity: 0.85; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.5rem; align-items: center; }
+  .status { font-size: 13px; color: var(--text2); margin-top: 10px; min-height: 18px; }
+  .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 1.5rem 0; }
+  .info-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 1.25rem; }
+  .info-box code { font-family: monospace; background: var(--bg3); padding: 1px 5px; border-radius: 3px; }
+
+  /* Pin selector styles */
+  .pin-selector-card {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
+  }
+  .pin-selector-grid {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .pin-checkbox-label {
+    display: flex; align-items: center; gap: 9px;
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius); padding: 8px 14px; cursor: pointer;
+    font-size: 13px; user-select: none; transition: background 0.1s;
+    flex: 1; min-width: 160px;
+  }
+  .pin-checkbox-label:hover { background: var(--bg3); }
+  .pin-checkbox-label input[type=checkbox] { accent-color: var(--blue); width: 15px; height: 15px; cursor: pointer; }
+  .pin-checkbox-label.checked { background: var(--bg); border-color: var(--blue); }
+  .pin-checkbox-label .pin-name { font-weight: 500; }
+  .pin-checkbox-label .pin-mono { font-family: monospace; font-size: 11px; color: var(--text3); margin-left: 2px; }
+  .pin-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .pin-warning {
+    margin-top: 10px; font-size: 12px; color: var(--coral);
+    display: none;
+  }
+  .pin-warning.visible { display: block; }
+  .trrs-diagram {
+    display: flex; align-items: center; gap: 0; margin: 12px 0 4px 0;
+    font-size: 11px; color: var(--text3);
+  }
+  .trrs-segment {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .trrs-bar {
+    height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; color: #fff; letter-spacing: 0.3px;
+    padding: 0 6px; min-width: 38px;
+  }
+  .trrs-connector { width: 8px; height: 3px; background: var(--text3); margin-top: 5px; }
+  .trrs-plug-end { width: 5px; height: 10px; background: var(--text3); border-radius: 0 2px 2px 0; margin-top: 2px; }
+
+  /* Mode switch & hold settings */
+  .mode-switch-card {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
+  }
+  .mode-switch-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; align-items: flex-start;
+  }
+  .mode-switch-radio-label {
+    display: flex; align-items: center; gap: 9px;
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius); padding: 8px 14px; cursor: pointer;
+    font-size: 13px; user-select: none; transition: background 0.1s;
+    flex: 1; min-width: 140px;
+  }
+  .mode-switch-radio-label:hover { background: var(--bg3); }
+  .mode-switch-radio-label input[type=radio] { accent-color: var(--blue); width: 15px; height: 15px; cursor: pointer; }
+  .mode-switch-radio-label.selected { background: var(--bg); border-color: var(--blue); }
+  .mode-callout {
+    margin-top: 12px; background: var(--bg2); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 9px 13px;
+    font-size: 12px; color: var(--text2); line-height: 1.6;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .mode-callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .hold-row {
+    display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .hold-row label { font-size: 13px; color: var(--text2); white-space: nowrap; }
+  .hold-slider-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
+  input[type=range] {
+    flex: 1; accent-color: var(--blue); cursor: pointer;
+  }
+  .hold-value-badge {
+    font-size: 13px; font-weight: 500; font-family: monospace;
+    background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius); padding: 4px 10px; min-width: 52px; text-align: center;
+  }
+  .hold-hint { font-size: 11px; color: var(--text3); margin-top: 5px; }
+  .mode-switch-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-family: monospace;
+    background: var(--bg2); border: 0.5px solid var(--border);
+    border-radius: 4px; padding: 2px 7px; color: var(--text2);
+  }
+  /* Mode-switch pin indicator on pin cards */
+  .mode-pin-tag {
+    font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66;
+    border-radius: 4px; padding: 2px 7px; color: var(--blue); white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎧 TRRS Trinkey Configurator</h1>
+  <p class="subtitle">Configure input switches connected via TRRS jack with an audio splitter, then download the config file to your board.</p>
+
+  <div class="info-box">
+    This tool generates a <code>config.py</code> file for use with the matching <code>code.py</code> on an Adafruit TRRS Trinkey.
+    The <code>board.TIP</code> pin is set as output-low to serve as ground. Connect your switches between <strong>TIP (sleeve of splitter)</strong> and any of the three input pins.
+    To cycle through modes, press and hold the designated <strong>Mode Switch</strong> for the configured hold duration.
+  </div>
+  <div class="info-box">
+    Uses a stereo/mic TRRS audio splitter to break out up to 3 independent switch inputs: <code>SLEEVE</code>, <code>RING_1</code>, and <code>RING_2</code>.
+    See the <a href="https://learn.adafruit.com/adafruit-trrs-trinkey/pinouts" target="_blank">Adafruit TRRS Trinkey pinout guide</a> for wiring details.
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Pin Selector Section -->
+  <div class="pin-selector-card">
+    <h2>Step 1 — Select active input pins</h2>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">Choose which TRRS contacts you are using as switch inputs. Only selected pins will appear in the HID configuration below.</p>
+
+    <!-- TRRS diagram -->
+    <div class="trrs-diagram" aria-label="TRRS connector diagram">
+      <div class="trrs-segment">
+        <div class="trrs-bar" style="background:#888; min-width:18px; font-size:9px;">plug</div>
+        <div style="height:5px"></div>
+      </div>
+      <div class="trrs-connector" style="background:var(--text3)"></div>
+      <div class="trrs-segment">
+        <div class="trrs-bar" style="background:#4a90d9;">TIP</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">GND out</div>
+      </div>
+      <div class="trrs-connector"></div>
+      <div class="trrs-segment">
+        <div class="trrs-bar" style="background:#e07b2a;">RING 1</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
+      </div>
+      <div class="trrs-connector"></div>
+      <div class="trrs-segment">
+        <div class="trrs-bar" style="background:#9b6ddb;">RING 2</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
+      </div>
+      <div class="trrs-connector"></div>
+      <div class="trrs-segment">
+        <div class="trrs-bar" style="background:#2aaa72;">SLEEVE</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
+      </div>
+      <div class="trrs-plug-end"></div>
+    </div>
+
+    <div class="pin-selector-grid" id="pin-selector-grid">
+      <!-- rendered by JS -->
+    </div>
+    <div class="pin-warning" id="pin-warning">⚠ At least one input pin must be selected.</div>
+  </div>
+
+  <!-- Mode Switch Selector -->
+  <div class="mode-switch-card">
+    <h2>Step 2 — Choose the Mode Switch pin</h2>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">
+      One switch is designated to cycle through modes. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a normal press.
+    </p>
+    <div class="mode-switch-row" id="mode-switch-row">
+      <!-- rendered by JS -->
+    </div>
+    <div class="mode-callout" id="mode-callout">
+      <span class="mode-callout-icon">💡</span>
+      <span id="mode-callout-text"></span>
+    </div>
+
+    <!-- Hold Duration -->
+    <div class="hold-row">
+      <label for="hold-slider">Hold duration</label>
+      <div class="hold-slider-wrap">
+        <input type="range" id="hold-slider" min="0.2" max="3.0" step="0.1" value="1.0" oninput="updateHoldDisplay(this.value)">
+        <span class="hold-value-badge" id="hold-value-badge">1.0 s</span>
+      </div>
+    </div>
+    <div class="hold-hint">
+      How long the Mode Switch must be held before the mode changes — short enough to be reachable, long enough to avoid accidental triggers during normal use. 0.5–1.5 s is a good range for most users.
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- HID Config Section -->
+  <h2>Step 3 — Configure HID actions per mode</h2>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;">Assign a keyboard, media, or mouse action to each active switch for each mode. The NeoPixel LED indicates the current mode.</p>
+
+  <div class="tabs" id="mode-tabs"></div>
+  <div id="mode-content"></div>
+
+  <hr class="section-divider">
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="downloadConfigPy()">Download config.py</button>
+    <button class="btn" onclick="loadDefaults()">Reset to defaults</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+const MODES = [
+  { id: 0, name: "Mode 0", color: "#378add", led: "Blue" },
+  { id: 1, name: "Mode 1", color: "#1D9E75", led: "Green" },
+  { id: 2, name: "Mode 2", color: "#9b4ddb", led: "Magenta" },
+  { id: 3, name: "Mode 3", color: "#d4aa10", led: "Yellow" },
+];
+
+const ALL_PINS = [
+  { id: "sleeve", label: "Sleeve",  badge: "board.SLEEVE", color: "#2aaa72" },
+  { id: "ring_1", label: "Ring 1",  badge: "board.RING_1", color: "#e07b2a" },
+  { id: "ring_2", label: "Ring 2",  badge: "board.RING_2", color: "#9b6ddb" },
+];
+
+const CONSUMER_CODES = [
+  "PLAY_PAUSE","SCAN_NEXT_TRACK","SCAN_PREVIOUS_TRACK","STOP",
+  "VOLUME_INCREMENT","VOLUME_DECREMENT","MUTE","FAST_FORWARD","REWIND","EJECT",
+  "BRIGHTNESS_INCREMENT","BRIGHTNESS_DECREMENT","SLEEP","POWER"
+];
+const MOUSE_BUTTONS = ["LEFT_BUTTON","RIGHT_BUTTON","MIDDLE_BUTTON"];
+const ALL_KEYS = [
+  "A","B","C","D","E","F","G","H","I","J","K","L","M",
+  "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+  "ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE",
+  "ENTER","SPACE","TAB","BACKSPACE","DELETE","ESCAPE","INSERT",
+  "F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",
+  "UP_ARROW","DOWN_ARROW","LEFT_ARROW","RIGHT_ARROW",
+  "HOME","END","PAGE_UP","PAGE_DOWN","PRINT_SCREEN",
+  "LEFT_CTRL","LEFT_SHIFT","LEFT_ALT","LEFT_GUI",
+  "RIGHT_CTRL","RIGHT_SHIFT","RIGHT_ALT","RIGHT_GUI",
+  "CAPS_LOCK","NUM_LOCK","SCROLL_LOCK",
+  "SEMICOLON","QUOTE","BACKSLASH","FORWARD_SLASH","PERIOD","COMMA",
+  "MINUS","EQUALS","LEFT_BRACKET","RIGHT_BRACKET","GRAVE_ACCENT"
+];
+
+let config = {};
+let activePins = ["sleeve", "ring_1", "ring_2"]; // default: all three
+let modeSwitchPin = "sleeve"; // default: first pin
+let modeCycleHold = 1.0; // seconds
+let activeMode = 0;
+
+const DEFAULT_ACTIONS = {
+  0: {
+    sleeve: { type: "keyboard", keys: ["ENTER"] },
+    ring_1: { type: "keyboard", keys: ["TAB"] },
+    ring_2: { type: "keyboard", keys: ["SPACE"] },
+  },
+  1: {
+    sleeve: { type: "consumer", code: "PLAY_PAUSE" },
+    ring_1: { type: "consumer", code: "SCAN_NEXT_TRACK" },
+    ring_2: { type: "consumer", code: "SCAN_PREVIOUS_TRACK" },
+  },
+  2: {
+    sleeve: { type: "mouse", button: "LEFT_BUTTON" },
+    ring_1: { type: "mouse", button: "RIGHT_BUTTON" },
+    ring_2: { type: "mouse", button: "MIDDLE_BUTTON" },
+  },
+  3: {
+    sleeve: { type: "none" },
+    ring_1: { type: "none" },
+    ring_2: { type: "none" },
+  },
+};
+
+function defaultAction(pin, modeId) {
+  return JSON.parse(JSON.stringify(DEFAULT_ACTIONS[modeId]?.[pin] || { type: "none" }));
+}
+
+function loadDefaults() {
+  config = {};
+  MODES.forEach(m => {
+    config[m.id] = {};
+    ALL_PINS.forEach(p => {
+      config[m.id][p.id] = defaultAction(p.id, m.id);
+    });
+  });
+  activePins = ["sleeve", "ring_1", "ring_2"];
+  modeSwitchPin = "sleeve";
+  modeCycleHold = 1.0;
+  render();
+  setStatus('');
+}
+
+function render() {
+  renderPinSelector();
+  renderModeSwitchSelector();
+  renderHoldDisplay();
+  renderTabs();
+  renderContent();
+}
+
+// ── Pin selector ────────────────────────────────────────────────────────────
+
+function renderPinSelector() {
+  const grid = document.getElementById('pin-selector-grid');
+  grid.innerHTML = ALL_PINS.map(pin => {
+    const checked = activePins.includes(pin.id);
+    return `<label class="pin-checkbox-label ${checked ? 'checked' : ''}" id="lbl-${pin.id}">
+      <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePin('${pin.id}', this.checked)">
+      <span class="pin-dot" style="background:${pin.color}"></span>
+      <span>
+        <span class="pin-name">${pin.label}</span>
+        <span class="pin-mono">${pin.badge}</span>
+      </span>
+    </label>`;
+  }).join('');
+}
+
+function togglePin(pinId, checked) {
+  const warn = document.getElementById('pin-warning');
+  if (!checked && activePins.length <= 1) {
+    document.querySelector(`#lbl-${pinId} input`).checked = true;
+    warn.classList.add('visible');
+    setTimeout(() => warn.classList.remove('visible'), 2500);
+    return;
+  }
+  warn.classList.remove('visible');
+
+  if (checked) {
+    if (!activePins.includes(pinId)) activePins.push(pinId);
+    activePins.sort((a, b) => ALL_PINS.findIndex(p => p.id === a) - ALL_PINS.findIndex(p => p.id === b));
+  } else {
+    activePins = activePins.filter(id => id !== pinId);
+    // If the removed pin was the mode switch, reassign to first active pin
+    if (modeSwitchPin === pinId) {
+      modeSwitchPin = activePins[0];
+    }
+  }
+
+  document.querySelectorAll('.pin-checkbox-label').forEach(lbl => lbl.classList.remove('checked'));
+  activePins.forEach(id => document.getElementById(`lbl-${id}`)?.classList.add('checked'));
+
+  renderModeSwitchSelector();
+  renderTabs();
+  renderContent();
+}
+
+// ── Mode switch selector ──────────────────────────────────────────────────────
+
+function renderModeSwitchSelector() {
+  const row = document.getElementById('mode-switch-row');
+  row.innerHTML = ALL_PINS.filter(p => activePins.includes(p.id)).map(pin => {
+    const sel = pin.id === modeSwitchPin;
+    return `<label class="mode-switch-radio-label ${sel ? 'selected' : ''}" id="mslbl-${pin.id}">
+      <input type="radio" name="mode-switch-pin" value="${pin.id}" ${sel ? 'checked' : ''} onchange="setModeSwitchPin('${pin.id}')">
+      <span class="pin-dot" style="background:${pin.color}"></span>
+      <span>
+        <span style="font-weight:500">${pin.label}</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--text3);margin-left:3px">${pin.badge}</span>
+      </span>
+    </label>`;
+  }).join('');
+  renderModeCallout();
+  renderContent(); // refresh pin cards to show/hide mode tag
+}
+
+function setModeSwitchPin(pinId) {
+  modeSwitchPin = pinId;
+  document.querySelectorAll('.mode-switch-radio-label').forEach(l => l.classList.remove('selected'));
+  document.getElementById(`mslbl-${pinId}`)?.classList.add('selected');
+  renderModeCallout();
+  renderContent();
+}
+
+function renderModeCallout() {
+  const pin = ALL_PINS.find(p => p.id === modeSwitchPin);
+  if (!pin) return;
+  const holdSec = modeCycleHold.toFixed(1);
+  document.getElementById('mode-callout-text').innerHTML =
+    `<strong>${pin.label}</strong> (<span style="font-family:monospace">${pin.badge}</span>) is the Mode Switch.
+     Hold it for <strong>${holdSec} s</strong> to cycle to the next mode.
+     A short tap still sends its normal HID action.`;
+}
+
+function renderHoldDisplay() {
+  const slider = document.getElementById('hold-slider');
+  if (slider) {
+    slider.value = modeCycleHold;
+    updateHoldDisplay(modeCycleHold);
+  }
+}
+
+function updateHoldDisplay(val) {
+  modeCycleHold = parseFloat(val);
+  document.getElementById('hold-value-badge').textContent = parseFloat(val).toFixed(1) + ' s';
+  renderModeCallout();
+}
+
+// ── Mode tabs ────────────────────────────────────────────────────────────────
+
+function renderTabs() {
+  document.getElementById('mode-tabs').innerHTML = MODES.map(m => `
+    <button class="tab-btn ${m.id === activeMode ? 'active' : ''}" onclick="setMode(${m.id})">
+      <span class="dot" style="background:${m.color}"></span>${m.name}
+      <span style="font-size:11px;color:var(--text3)">(${m.led} LED)</span>
+    </button>`).join('');
+}
+
+function setMode(id) { activeMode = id; renderTabs(); renderContent(); }
+
+// ── Pin action cards ─────────────────────────────────────────────────────────
+
+function renderContent() {
+  const m = activeMode;
+  const pinDefs = ALL_PINS.filter(p => activePins.includes(p.id));
+
+  if (pinDefs.length === 0) {
+    document.getElementById('mode-content').innerHTML =
+      `<div class="info-box">No pins selected. Choose at least one input pin above.</div>`;
+    return;
+  }
+
+  document.getElementById('mode-content').innerHTML = pinDefs.map(pin => {
+    const action = config[m][pin.id];
+    const isModePin = pin.id === modeSwitchPin;
+    return `<div class="pin-card">
+      <div class="pin-title">
+        <span class="pin-dot" style="background:${pin.color};width:10px;height:10px;border-radius:50%;display:inline-block"></span>
+        ${pin.label} switch
+        <span class="pin-badge">${pin.badge}</span>
+        ${isModePin ? `<span class="mode-pin-tag">⟳ Mode Switch</span>` : ''}
+      </div>
+      ${renderFields(m, pin.id, action)}
+    </div>`;
+  }).join('');
+}
+
+function renderFields(mId, pin, action) {
+  const typeSelect = `<div class="row">
+    <label>Action type</label>
+    <div class="field">
+      <select onchange="setType(${mId},'${pin}',this.value)">
+        <option value="keyboard"  ${action.type==='keyboard'  ? 'selected' : ''}>Keyboard key(s)</option>
+        <option value="consumer"  ${action.type==='consumer'  ? 'selected' : ''}>Media control</option>
+        <option value="mouse"     ${action.type==='mouse'     ? 'selected' : ''}>Mouse button</option>
+        <option value="none"      ${action.type==='none'      ? 'selected' : ''}>No action</option>
+      </select>
+    </div></div>`;
+
+  let detail = '';
+  if (action.type === 'keyboard') {
+    const keys = action.keys || [];
+    detail = `<div class="row"><label>Keys</label><div class="field">
+      <div class="key-list" id="kl-${mId}-${pin}">
+        ${keys.map((k, i) => `<div class="key-tag">${k}<button onclick="removeKey(${mId},'${pin}',${i})" title="Remove">×</button></div>`).join('')}
+        ${keys.length === 0 ? '<span style="font-size:12px;color:var(--text3)">No keys — add one below</span>' : ''}
+      </div>
+      <div class="add-key-row">
+        <select id="kadd-${mId}-${pin}">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
+        <button class="btn btn-sm" onclick="addKey(${mId},'${pin}')">+ Add</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px">Keys are pressed together (combo). Max 6.</div>
+    </div></div>`;
+  } else if (action.type === 'consumer') {
+    detail = `<div class="row"><label>Control</label><div class="field">
+      <select onchange="setField(${mId},'${pin}','code',this.value)">
+        ${CONSUMER_CODES.map(c => `<option ${action.code === c ? 'selected' : ''}>${c}</option>`).join('')}
+      </select></div></div>`;
+  } else if (action.type === 'mouse') {
+    detail = `<div class="row"><label>Button</label><div class="field">
+      <select onchange="setField(${mId},'${pin}','button',this.value)">
+        ${MOUSE_BUTTONS.map(b => `<option ${action.button === b ? 'selected' : ''}>${b}</option>`).join('')}
+      </select></div></div>`;
+  }
+  return typeSelect + detail;
+}
+
+function setType(mId, pin, type) {
+  const defaults = {
+    keyboard: { type: 'keyboard', keys: ['A'] },
+    consumer: { type: 'consumer', code: 'PLAY_PAUSE' },
+    mouse:    { type: 'mouse', button: 'LEFT_BUTTON' },
+    none:     { type: 'none' }
+  };
+  config[mId][pin] = JSON.parse(JSON.stringify(defaults[type]));
+  renderContent();
+}
+
+function setField(mId, pin, field, val) { config[mId][pin][field] = val; }
+
+function addKey(mId, pin) {
+  const sel = document.getElementById(`kadd-${mId}-${pin}`);
+  if (!config[mId][pin].keys) config[mId][pin].keys = [];
+  if (config[mId][pin].keys.length >= 6) { setStatus('Maximum 6 keys per combo.'); return; }
+  config[mId][pin].keys.push(sel.value);
+  renderContent();
+}
+
+function removeKey(mId, pin, idx) {
+  config[mId][pin].keys.splice(idx, 1);
+  renderContent();
+}
+
+// ── Export ───────────────────────────────────────────────────────────────────
+
+function downloadConfigPy() {
+  // Build modes object containing only active pins
+  const modesOut = {};
+  MODES.forEach(m => {
+    modesOut[m.id] = {};
+    activePins.forEach(pin => {
+      modesOut[m.id][pin] = config[m.id][pin];
+    });
+  });
+
+  const out = {
+    version: 1,
+    active_pins: activePins,
+    mode_switch_pin: modeSwitchPin,
+    mode_cycle_hold: parseFloat(modeCycleHold.toFixed(1)),
+    modes: modesOut,
+  };
+
+  const pyContent = `CONFIG = ${JSON.stringify(out, null, 2)}`;
+  const blob = new Blob([pyContent], { type: 'text/x-python' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'config.py';
+  a.click();
+  setStatus('config.py downloaded. Drag it to your CIRCUITPY drive.');
+}
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+
+loadDefaults();
+</script>
+</body>
+</html>
