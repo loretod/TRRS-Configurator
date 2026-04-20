@@ -79,20 +79,23 @@ for pin_name in active_pins:
 num_modes = len(raw_config)
 
 # === HID action dispatcher ===
+# All actions fire on RELEASE only (is_press=False) to prevent OS key-repeat
+# during long holds, e.g. while the mode-switch hold timer is running.
 def do_action(action, is_press):
+    if is_press:
+        return  # Wait for release before sending any HID event
     t = action.get("type")
     if t == "keyboard":
         codes = [getattr(Keycode, k, None) for k in action.get("keys", [])]
         codes = [c for c in codes if c is not None]
-        if is_press:
+        if codes:
             kbd.press(*codes)
-        else:
             kbd.release_all()
-    elif t == "consumer" and is_press:
+    elif t == "consumer":
         code = getattr(ConsumerControlCode, action.get("code", ""), None)
         if code:
             cc.send(code)
-    elif t == "mouse" and is_press:
+    elif t == "mouse":
         btn_map = {
             "LEFT_BUTTON": Mouse.LEFT_BUTTON,
             "RIGHT_BUTTON": Mouse.RIGHT_BUTTON,
@@ -132,7 +135,8 @@ while True:
     # === Handle each active pin independently ===
     for pin_name, is_pressed in current_states.items():
         if is_pressed != pin_states[pin_name]:
-            # Skip HID action on release if this press was consumed by a mode cycle
+            # If this pin's hold triggered a mode cycle, suppress the release
+            # event so it doesn't also fire the pin's normal HID action.
             if pin_name == mode_switch_pin and mode_pin_was_cycled:
                 pin_states[pin_name] = is_pressed
                 continue
