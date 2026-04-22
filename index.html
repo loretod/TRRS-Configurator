@@ -179,8 +179,10 @@
     To cycle through modes, press and hold the designated <strong>Mode Switch</strong> for the configured hold duration.
   </div>
   <div class="info-box">
-    Uses a stereo/mic TRRS audio splitter to break out up to 3 independent switch inputs: <code>SLEEVE</code>, <code>RING_1</code>, and <code>RING_2</code>.
-    See the <a href="https://learn.adafruit.com/adafruit-trrs-trinkey/pinouts" target="_blank">Adafruit TRRS Trinkey pinout guide</a> for wiring details.
+    <p>Uses a stereo/mic TRRS audio splitter to break out up to 3 independent switch inputs: <code>SLEEVE</code>, <code>RING_1</code>, and <code>RING_2</code>.
+    See the <a href="https://learn.adafruit.com/adafruit-trrs-trinkey/pinouts" target="_blank">Adafruit TRRS Trinkey pinout guide</a> for wiring details.</p>
+    <br>
+    <p>The Shrub Hub by Makers Making Change is a well documented open source project that supports this configuration. Visit its <a href="https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0" target="_blank">project page</a> to learn more and request this device.</p>
   </div>
 
   <hr class="section-divider">
@@ -203,17 +205,17 @@
       </div>
       <div class="trrs-connector"></div>
       <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#e07b2a;">RING 1</div>
+        <div class="trrs-bar" style="background:#e07b2a;">RING 1- Switch 1</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
       </div>
       <div class="trrs-connector"></div>
       <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#9b6ddb;">RING 2</div>
+        <div class="trrs-bar" style="background:#9b6ddb;">RING 2- Switch 2</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
       </div>
       <div class="trrs-connector"></div>
       <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#2aaa72;">SLEEVE</div>
+        <div class="trrs-bar" style="background:#2aaa72;">SLEEVE- Switch 3</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
       </div>
       <div class="trrs-plug-end"></div>
@@ -243,7 +245,7 @@
     <div class="hold-row">
       <label for="hold-slider">Hold duration</label>
       <div class="hold-slider-wrap">
-        <input type="range" id="hold-slider" min="0.2" max="3.0" step="0.1" value="1.0" oninput="updateHoldDisplay(this.value)">
+        <input type="range" id="hold-slider" min="0.2" max="5.0" step="0.1" value="1.0" oninput="updateHoldDisplay(this.value)">
         <span class="hold-value-badge" id="hold-value-badge">1.0 s</span>
       </div>
     </div>
@@ -279,9 +281,9 @@ const MODES = [
 ];
 
 const ALL_PINS = [
-  { id: "sleeve", label: "Sleeve",  badge: "board.SLEEVE", color: "#2aaa72" },
-  { id: "ring_1", label: "Ring 1",  badge: "board.RING_1", color: "#e07b2a" },
-  { id: "ring_2", label: "Ring 2",  badge: "board.RING_2", color: "#9b6ddb" },
+  { id: "ring_1", label: "Switch 1",  badge: "board.RING_1", color: "#e07b2a" },
+  { id: "ring_2", label: "Switch 2",  badge: "board.RING_2", color: "#9b6ddb" },
+  { id: "sleeve", label: "Switch 3",  badge: "board.SLEEVE", color: "#2aaa72" },
 ];
 
 const CONSUMER_CODES = [

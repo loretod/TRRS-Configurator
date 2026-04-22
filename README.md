@@ -2,7 +2,10 @@
 
 This guide walks you through setting up the Adafruit TRRS Trinkey as a configurable assistive switch interface using CircuitPython.
 
+A [walkthrough video is available here](https://www.youtube.com/watch?v=vyD9MBjAhcI).
+
 ---
+
 
 ## What You'll Need
 
@@ -126,7 +129,7 @@ The board will restart automatically when you copy files. The NeoPixel LED will 
 
 Plug in your TRRS splitter and switches, then test each one. The LED colour tells you the current mode:
 
-| LED colour | Mode |
+| LED color | Mode |
 |---|---|
 | 🔵 Blue | Mode 0 |
 | 🟢 Green | Mode 1 |
@@ -140,7 +143,7 @@ To **cycle to the next mode**, hold down your designated Mode Switch for the dur
 ## Troubleshooting
 
 **The `CIRCUITPY` drive doesn't appear after copying the firmware.**
-Try unplugging and re-plugging the Trinkey. If it still shows `TRRSBOOT`, the firmware copy may not have completed — try again.
+Try unplugging and re-plugging the Trinkey. If it still shows `TRINKEYBOOT`, the firmware copy may not have completed — try again.
 
 **The NeoPixel doesn't light up / nothing happens.**
 Check that `code.py` and `config.py` are in the root of `CIRCUITPY` (not inside a subfolder). Also confirm `neopixel.mpy` and `adafruit_pixelbuf.mpy` are in `CIRCUITPY/lib/`.
@@ -169,4 +172,4 @@ To change your switch assignments at any time, simply open the configurator agai
 - [CircuitPython downloads for TRRS Trinkey](https://circuitpython.org/board/adafruit_trrs_trinkey_m0/)
 - [CircuitPython Library Bundle](https://circuitpython.org/libraries)
 - [Welcome to CircuitPython (beginner guide)](https://learn.adafruit.com/welcome-to-circuitpython)
-- [Makers Making Change — Rocket Switch Interface](https://www.makersmakingchange.com/product/rocket-switch-interface/01tJR000000694SYAQ)
+- [Makers Making Change — Shrub Hub](https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0)
