@@ -166,6 +166,10 @@
     font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66;
     border-radius: 4px; padding: 2px 7px; color: var(--blue); white-space: nowrap;
   }
+  .add{
+    background-color: #2aaa72;
+    color: white;
+  }
 </style>
 </head>
 <body>
@@ -231,7 +235,7 @@
   <div class="mode-switch-card">
     <h2>Step 2 — Choose the Mode Switch pin</h2>
     <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">
-      One switch is designated to cycle through modes. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a normal press.
+      One switch is designated to <b>cycle through modes</b>. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a normal press and this will be the <b>default action</b> if removing the splitter.
     </p>
     <div class="mode-switch-row" id="mode-switch-row">
       <!-- rendered by JS -->
@@ -521,7 +525,7 @@ function renderFields(mId, pin, action) {
       </div>
       <div class="add-key-row">
         <select id="kadd-${mId}-${pin}">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
-        <button class="btn btn-sm" onclick="addKey(${mId},'${pin}')">+ Add</button>
+        <button class="btn btn-sm add" onclick="addKey(${mId},'${pin}')">+ Add</button>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-top:5px">Keys are pressed together (combo). Max 6.</div>
     </div></div>`;

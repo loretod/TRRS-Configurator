@@ -17,9 +17,9 @@ try:
     active_pins = cfg.get("active_pins", ["sleeve", "ring_1", "ring_2"])
     mode_switch_pin = cfg.get("mode_switch_pin", active_pins[0])
     MODE_CYCLE_HOLD = cfg.get("mode_cycle_hold", 1.0)
-
+    print("Config loaded from config.py")
 except (ImportError, AttributeError):
-
+    print("config.py not found or invalid — using defaults")
     raw_config = {
         "0": {
             "sleeve": {"type": "keyboard", "keys": ["ENTER"]},
@@ -82,31 +82,27 @@ num_modes = len(raw_config)
 # All actions fire on RELEASE only (is_press=False) to prevent OS key-repeat
 # during long holds, e.g. while the mode-switch hold timer is running.
 def do_action(action, is_press):
+    if is_press:
+        return  # Wait for release before sending any HID event
     t = action.get("type")
     if t == "keyboard":
         codes = [getattr(Keycode, k, None) for k in action.get("keys", [])]
         codes = [c for c in codes if c is not None]
         if codes:
-            if is_press:
-                kbd.press(*codes)
-            else:
-                kbd.release_all()
+            kbd.press(*codes)
+            kbd.release_all()
     elif t == "consumer":
-        if is_press:
-            code = getattr(ConsumerControlCode, action.get("code", ""), None)
-            if code:
-                cc.send(code)
+        code = getattr(ConsumerControlCode, action.get("code", ""), None)
+        if code:
+            cc.send(code)
     elif t == "mouse":
-        if is_press:
-            btn_map = {
-                "LEFT_BUTTON": Mouse.LEFT_BUTTON,
-                "RIGHT_BUTTON": Mouse.RIGHT_BUTTON,
-                "MIDDLE_BUTTON": Mouse.MIDDLE_BUTTON,
-            }
-            btn = btn_map.get(action.get("button", ""), Mouse.LEFT_BUTTON)
-            mouse.press(btn)
-        else:
-            mouse.release_all()
+        btn_map = {
+            "LEFT_BUTTON": Mouse.LEFT_BUTTON,
+            "RIGHT_BUTTON": Mouse.RIGHT_BUTTON,
+            "MIDDLE_BUTTON": Mouse.MIDDLE_BUTTON,
+        }
+        btn = btn_map.get(action.get("button", ""), Mouse.LEFT_BUTTON)
+        mouse.click(btn)
 
 # === Main State & Loop ===
 mode = 0
@@ -119,15 +115,6 @@ mode_pin_was_cycled = False  # prevent HID action firing on the same press that 
 
 while True:
     current_states = {name: not pin.value for name, pin in inputs.items()}
-
-    # === Multi-pin suppression ===
-    # If more than one switch is pressed at the same time (including all three,
-    # which happens when a single switch is plugged in without a splitter),
-    # suppress all pins except the mode switch pin.
-    if sum(current_states.values()) > 1:
-        for name in current_states:
-            if name != mode_switch_pin:
-                current_states[name] = False
 
     # === Mode switch hold logic ===
     if mode_switch_pin in current_states:
