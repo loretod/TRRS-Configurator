@@ -35,12 +35,13 @@
   .tab-btn:hover { background: var(--bg3); }
   .tab-btn.active { background: var(--bg); color: var(--text); border-color: var(--border2); font-weight: 500; }
   .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .pin-card {
+  .card {
     background: var(--bg); border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px;
+    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
   }
-  .pin-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .pin-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .pin-badge { font-size: 11px; font-weight: 400; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 7px; color: var(--text2); font-family: monospace; }
+  .mode-pin-tag { font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66; border-radius: 4px; padding: 2px 7px; color: var(--blue); white-space: nowrap; }
   .row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
   .row label { font-size: 13px; color: var(--text2); min-width: 90px; padding-top: 7px; }
   .row .field { flex: 1; min-width: 160px; }
@@ -51,20 +52,12 @@
   }
   select:focus, input:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
   .key-list { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
-  .key-tag {
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    border-radius: var(--radius); padding: 4px 10px; font-size: 12px;
-    display: flex; align-items: center; gap: 6px; font-family: monospace;
-  }
+  .key-tag { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 4px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; font-family: monospace; }
   .key-tag button { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; padding: 0; font-family: inherit; }
   .key-tag button:hover { color: var(--text); }
   .add-key-row { display: flex; gap: 6px; align-items: center; }
   .add-key-row select { width: auto; flex: 1; }
-  .btn {
-    padding: 8px 18px; font-size: 13px; border-radius: var(--radius);
-    border: 0.5px solid var(--border2); background: var(--bg2);
-    color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.1s;
-  }
+  .btn { padding: 8px 18px; font-size: 13px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.1s; }
   .btn:hover { background: var(--bg3); }
   .btn-sm { padding: 5px 11px; font-size: 12px; }
   .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
@@ -75,100 +68,60 @@
   .info-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 1.25rem; }
   .info-box code { font-family: monospace; background: var(--bg3); padding: 1px 5px; border-radius: 3px; }
 
-  /* Pin selector styles */
-  .pin-selector-card {
-    background: var(--bg); border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
-  }
-  .pin-selector-grid {
-    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;
-  }
-  .pin-checkbox-label {
-    display: flex; align-items: center; gap: 9px;
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    border-radius: var(--radius); padding: 8px 14px; cursor: pointer;
-    font-size: 13px; user-select: none; transition: background 0.1s;
-    flex: 1; min-width: 160px;
-  }
+  /* Splitter selector */
+  .splitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px 0; }
+  .splitter-card { flex: 1; min-width: 180px; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; user-select: none; transition: background 0.1s; position: relative; }
+  .splitter-card:hover { background: var(--bg3); }
+  .splitter-card.selected { background: var(--bg); border-color: var(--blue); }
+  .splitter-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .splitter-card-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+  .splitter-card-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+  .splitter-card-pins { font-size: 11px; font-family: monospace; color: var(--text3); margin-top: 5px; }
+  .splitter-check { color: var(--blue); }
+  .wiring-note { font-size: 12px; color: var(--text2); background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 13px; margin-bottom: 12px; line-height: 1.7; }
+
+  /* Pin checkboxes */
+  .pin-selector-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .pin-checkbox-label { display: flex; align-items: center; gap: 9px; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; user-select: none; transition: background 0.1s; flex: 1; min-width: 160px; }
   .pin-checkbox-label:hover { background: var(--bg3); }
   .pin-checkbox-label input[type=checkbox] { accent-color: var(--blue); width: 15px; height: 15px; cursor: pointer; }
   .pin-checkbox-label.checked { background: var(--bg); border-color: var(--blue); }
   .pin-checkbox-label .pin-name { font-weight: 500; }
   .pin-checkbox-label .pin-mono { font-family: monospace; font-size: 11px; color: var(--text3); margin-left: 2px; }
   .pin-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .pin-warning {
-    margin-top: 10px; font-size: 12px; color: var(--coral);
-    display: none;
-  }
+  .pin-warning { margin-top: 10px; font-size: 12px; color: var(--coral); display: none; }
   .pin-warning.visible { display: block; }
-  .trrs-diagram {
-    display: flex; align-items: center; gap: 0; margin: 12px 0 4px 0;
-    font-size: 11px; color: var(--text3);
-  }
-  .trrs-segment {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-  }
-  .trrs-bar {
-    height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 600; color: #fff; letter-spacing: 0.3px;
-    padding: 0 6px; min-width: 38px;
-  }
-  .trrs-connector { width: 8px; height: 3px; background: var(--text3); margin-top: 5px; }
-  .trrs-plug-end { width: 5px; height: 10px; background: var(--text3); border-radius: 0 2px 2px 0; margin-top: 2px; }
 
-  /* Mode switch & hold settings */
-  .mode-switch-card {
-    background: var(--bg); border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
-  }
-  .mode-switch-row {
-    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; align-items: flex-start;
-  }
-  .mode-switch-radio-label {
-    display: flex; align-items: center; gap: 9px;
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    border-radius: var(--radius); padding: 8px 14px; cursor: pointer;
-    font-size: 13px; user-select: none; transition: background 0.1s;
-    flex: 1; min-width: 140px;
-  }
+  /* Mode switch */
+  .mode-switch-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; align-items: flex-start; }
+  .mode-switch-radio-label { display: flex; align-items: center; gap: 9px; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; cursor: pointer; font-size: 13px; user-select: none; transition: background 0.1s; flex: 1; min-width: 140px; }
   .mode-switch-radio-label:hover { background: var(--bg3); }
   .mode-switch-radio-label input[type=radio] { accent-color: var(--blue); width: 15px; height: 15px; cursor: pointer; }
   .mode-switch-radio-label.selected { background: var(--bg); border-color: var(--blue); }
-  .mode-callout {
-    margin-top: 12px; background: var(--bg2); border: 0.5px solid var(--border);
-    border-radius: var(--radius); padding: 9px 13px;
-    font-size: 12px; color: var(--text2); line-height: 1.6;
-    display: flex; align-items: flex-start; gap: 8px;
-  }
+  .mode-callout { margin-top: 12px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--text2); line-height: 1.6; display: flex; align-items: flex-start; gap: 8px; }
   .mode-callout-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-  .hold-row {
-    display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap;
-  }
+  .hold-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
   .hold-row label { font-size: 13px; color: var(--text2); white-space: nowrap; }
   .hold-slider-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px; }
-  input[type=range] {
-    flex: 1; accent-color: var(--blue); cursor: pointer;
-  }
-  .hold-value-badge {
-    font-size: 13px; font-weight: 500; font-family: monospace;
-    background: var(--bg2); border: 0.5px solid var(--border2);
-    border-radius: var(--radius); padding: 4px 10px; min-width: 52px; text-align: center;
-  }
+  input[type=range] { flex: 1; accent-color: var(--blue); cursor: pointer; }
+  .hold-value-badge { font-size: 13px; font-weight: 500; font-family: monospace; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 4px 10px; min-width: 52px; text-align: center; }
   .hold-hint { font-size: 11px; color: var(--text3); margin-top: 5px; }
-  .mode-switch-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11px; font-family: monospace;
-    background: var(--bg2); border: 0.5px solid var(--border);
-    border-radius: 4px; padding: 2px 7px; color: var(--text2);
+
+  /* Pin card status indicators */
+  .pin-card-configured { background: #1d9e7511; border-color: #1d9e7555; }
+  .pin-card-incomplete { background: #d85a3011; border-color: #d85a3055; }
+  .card-status-badge {
+    font-size: 11px; font-weight: 500; border-radius: 4px;
+    padding: 2px 8px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
   }
-  /* Mode-switch pin indicator on pin cards */
-  .mode-pin-tag {
-    font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66;
-    border-radius: 4px; padding: 2px 7px; color: var(--blue); white-space: nowrap;
-  }
-  .add{
-    background-color: #2aaa72;
-    color: white;
+  .card-status-badge.ok   { background: #1d9e7522; color: #1d9e75; border: 0.5px solid #1d9e7555; }
+  .card-status-badge.warn { background: #d85a3022; color: #d85a30; border: 0.5px solid #d85a3055; }
+
+  /* Mono lock notice */
+  .mono-lock-notice {
+    font-size: 11px; color: #d85a30; background: #d85a3011;
+    border: 0.5px solid #d85a3055; border-radius: var(--radius);
+    padding: 7px 11px; margin-top: 8px; line-height: 1.5;
   }
 </style>
 </head>
@@ -179,73 +132,37 @@
 
   <div class="info-box">
     This tool generates a <code>config.py</code> file for use with the matching <code>code.py</code> on an Adafruit TRRS Trinkey.
-    The <code>board.TIP</code> pin is set as output-low to serve as ground. Connect your switches between <strong>TIP (sleeve of splitter)</strong> and any of the three input pins.
+    The <code>board.TIP</code> pin is normally set as output-low to serve as ground. Connect your switches between TIP and the input pins.
     To cycle through modes, press and hold the designated <strong>Mode Switch</strong> for the configured hold duration.
   </div>
   <div class="info-box">
-    <p>Uses a stereo/mic TRRS audio splitter to break out up to 3 independent switch inputs: <code>SLEEVE</code>, <code>RING_1</code>, and <code>RING_2</code>.
-    See the <a href="https://learn.adafruit.com/adafruit-trrs-trinkey/pinouts" target="_blank">Adafruit TRRS Trinkey pinout guide</a> for wiring details.</p>
-    <br>
     <p>The Shrub Hub by Makers Making Change is a well documented open source project that supports this configuration. Visit its <a href="https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0" target="_blank">project page</a> to learn more and request this device.</p>
   </div>
 
   <hr class="section-divider">
 
-  <!-- Pin Selector Section -->
-  <div class="pin-selector-card">
-    <h2>Step 1 — Select active input pins</h2>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">Choose which TRRS contacts you are using as switch inputs. Only selected pins will appear in the HID configuration below.</p>
-
-    <!-- TRRS diagram -->
-    <div class="trrs-diagram" aria-label="TRRS connector diagram">
-      <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#888; min-width:18px; font-size:9px;">plug</div>
-        <div style="height:5px"></div>
-      </div>
-      <div class="trrs-connector" style="background:var(--text3)"></div>
-      <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#4a90d9;">TIP</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">GND out</div>
-      </div>
-      <div class="trrs-connector"></div>
-      <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#e07b2a;">RING 1- Switch 1</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
-      </div>
-      <div class="trrs-connector"></div>
-      <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#9b6ddb;">RING 2- Switch 2</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
-      </div>
-      <div class="trrs-connector"></div>
-      <div class="trrs-segment">
-        <div class="trrs-bar" style="background:#2aaa72;">SLEEVE- Switch 3</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;">input</div>
-      </div>
-      <div class="trrs-plug-end"></div>
-    </div>
-
-    <div class="pin-selector-grid" id="pin-selector-grid">
-      <!-- rendered by JS -->
-    </div>
+  <!-- Step 1: Splitter -->
+  <div class="card">
+    <h2>Step 1 — Select your splitter type</h2>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Choose the splitter you are using. This sets which pins are available as switch inputs. You can still adjust individual pins manually below.</p>
+    <div class="splitter-grid" id="splitter-grid"></div>
+    <div class="wiring-note" id="wiring-note"></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">Active switch inputs — adjust if needed:</p>
+    <div class="pin-selector-grid" id="pin-selector-grid"></div>
     <div class="pin-warning" id="pin-warning">⚠ At least one input pin must be selected.</div>
   </div>
 
-  <!-- Mode Switch Selector -->
-  <div class="mode-switch-card">
-    <h2>Step 2 — Choose the Mode Switch pin</h2>
+  <!-- Step 2: Mode switch -->
+  <div class="card">
+    <h2>Step 2 — Choose the Mode Switch</h2>
     <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">
-      One switch is designated to <b>cycle through modes</b>. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a normal press and this will be the <b>default action</b> if removing the splitter.
+      One switch is designated to cycle through modes. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a short press.
     </p>
-    <div class="mode-switch-row" id="mode-switch-row">
-      <!-- rendered by JS -->
-    </div>
+    <div class="mode-switch-row" id="mode-switch-row"></div>
     <div class="mode-callout" id="mode-callout">
       <span class="mode-callout-icon">💡</span>
       <span id="mode-callout-text"></span>
     </div>
-
-    <!-- Hold Duration -->
     <div class="hold-row">
       <label for="hold-slider">Hold duration</label>
       <div class="hold-slider-wrap">
@@ -254,16 +171,15 @@
       </div>
     </div>
     <div class="hold-hint">
-      How long the Mode Switch must be held before the mode changes — short enough to be reachable, long enough to avoid accidental triggers during normal use. 0.5–1.5 s is a good range for most users.
+      How long the Mode Switch must be held before the mode changes. 0.5–2.0 s is a good range for most users.
     </div>
   </div>
 
   <hr class="section-divider">
 
-  <!-- HID Config Section -->
+  <!-- Step 3: HID config -->
   <h2>Step 3 — Configure HID actions per mode</h2>
   <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;">Assign a keyboard, media, or mouse action to each active switch for each mode. The NeoPixel LED indicates the current mode.</p>
-
   <div class="tabs" id="mode-tabs"></div>
   <div id="mode-content"></div>
 
@@ -277,17 +193,54 @@
 </div>
 
 <script>
+// ── Constants ────────────────────────────────────────────────────────────────
+
 const MODES = [
-  { id: 0, name: "Mode 0", color: "#378add", led: "Blue" },
-  { id: 1, name: "Mode 1", color: "#1D9E75", led: "Green" },
+  { id: 0, name: "Mode 0", color: "#378add", led: "Blue"    },
+  { id: 1, name: "Mode 1", color: "#1D9E75", led: "Green"   },
   { id: 2, name: "Mode 2", color: "#9b4ddb", led: "Magenta" },
-  { id: 3, name: "Mode 3", color: "#d4aa10", led: "Yellow" },
+  { id: 3, name: "Mode 3", color: "#d4aa10", led: "Yellow"  },
 ];
 
+// splitters field controls which pins appear as options for that splitter type
 const ALL_PINS = [
-  { id: "ring_1", label: "Switch 1",  badge: "board.RING_1", color: "#e07b2a" },
-  { id: "ring_2", label: "Switch 2",  badge: "board.RING_2", color: "#9b6ddb" },
-  { id: "sleeve", label: "Switch 3",  badge: "board.SLEEVE", color: "#2aaa72" },
+  { id: "tip",    label: "Switch 1", badge: "board.TIP",    color: "#4a90d9", splitters: ["mono"] },
+  { id: "ring_1", label: "Switch 1", badge: "board.RING_1", color: "#e07b2a", splitters: ["trrs", "headset", "mono"] },
+  { id: "ring_2", label: "Switch 2", badge: "board.RING_2", color: "#9b6ddb", splitters: ["trrs", "headset"] },
+  { id: "sleeve", label: "Switch 3", badge: "board.SLEEVE", color: "#2aaa72", splitters: ["trrs", "headset"] },
+];
+
+const SPLITTERS = [
+  {
+    id: "trrs",
+    title: "TRRS Splitter/ Shrub Hub",
+    emoji: "🎧",
+    desc: "Standard TRRS Y-splitter. Supports up to 3 switches.",
+    pins: "SW1 \u2192 RING_1 \u00b7 SW2 \u2192 RING_2 \u00b7 SW3 \u2192 SLEEVE",
+    activePins: ["ring_1", "ring_2", "sleeve"],
+    modeSwitchPin: "sleeve",
+    wiring: "<strong>TIP</strong> is driven low as ground. Plug each switch into a female TRRS jack on the splitter — each switch shorts its jack's Tip to Sleeve. Switch 1 wires to RING_1, Switch 2 to RING_2, Switch 3 to SLEEVE.",
+  },
+  {
+    id: "mono",
+    title: "Mono (Stereo\u21922\u00d7TS) Splitter",
+    emoji: "🔌",
+    desc: "Stereo (3.5mm TRS) Y-splitter (e.g. Amazon B096XNHTH3). Splits one stereo plug into 2 jacks for 2 switches.",
+    pins: "SW1 \u2192 TIP \u00b7 SW2 \u2192 RING_1",
+    activePins: ["tip", "ring_1"],
+    modeSwitchPin: "tip",
+    wiring: "<strong>RING_2 and SLEEVE</strong> are driven low as grounds by the firmware. This splitter terminates in a 3-conductor stereo (TRS) plug, so its two switch jacks land on separate conductors: the <strong>white jack</strong> connects to TIP (Switch 1) and the <strong>red jack</strong> connects to RING_1 (Switch 2). Both are clean, independent inputs because the TRS plug only grounds the sleeve. \u26a0\ufe0f <strong>The TIP switch is automatically used as the Mode Switch</strong> \u2014 hold it to cycle modes; a short press still sends its normal HID action.",
+  },
+  {
+    id: "headset",
+    title: "Headphone + Mic Splitter",
+    emoji: "🎤",
+    desc: "TRRS to TRS headphone + TRS mic. Supports up to 3 switches.",
+    pins: "Headphone jack: SW1 \u2192 RING_1, SW2 \u2192 RING_2 \u00b7 Mic jack: SW3 \u2192 SLEEVE",
+    activePins: ["ring_1", "ring_2", "sleeve"],
+    modeSwitchPin: "sleeve",
+    wiring: "<strong>TIP</strong> is driven low as ground. The <strong>headphone (\uD83C\uDFA7) jack</strong> carries RING_1 (Tip) and RING_2 (Ring) \u2014 plug Switch 1 and Switch 2 here. The <strong>mic (\uD83C\uDFA4) jack</strong> carries SLEEVE (Tip) \u2014 plug Switch 3 here. Each switch shorts its jack\u2019s Tip to Sleeve.",
+  },
 ];
 
 const CONSUMER_CODES = [
@@ -311,55 +264,65 @@ const ALL_KEYS = [
   "MINUS","EQUALS","LEFT_BRACKET","RIGHT_BRACKET","GRAVE_ACCENT"
 ];
 
-let config = {};
-let activePins = ["sleeve", "ring_1", "ring_2"]; // default: all three
-let modeSwitchPin = "sleeve"; // default: first pin
-let modeCycleHold = 1.0; // seconds
-let activeMode = 0;
-
 const DEFAULT_ACTIONS = {
   0: {
-    sleeve: { type: "keyboard", keys: ["ENTER"] },
+    tip:    { type: "keyboard", keys: ["ENTER"] },
     ring_1: { type: "keyboard", keys: ["TAB"] },
     ring_2: { type: "keyboard", keys: ["SPACE"] },
+    sleeve: { type: "keyboard", keys: ["ENTER"] },
   },
   1: {
-    sleeve: { type: "consumer", code: "PLAY_PAUSE" },
+    tip:    { type: "consumer", code: "PLAY_PAUSE" },
     ring_1: { type: "consumer", code: "SCAN_NEXT_TRACK" },
     ring_2: { type: "consumer", code: "SCAN_PREVIOUS_TRACK" },
+    sleeve: { type: "consumer", code: "PLAY_PAUSE" },
   },
   2: {
-    sleeve: { type: "mouse", button: "LEFT_BUTTON" },
+    tip:    { type: "mouse", button: "LEFT_BUTTON" },
     ring_1: { type: "mouse", button: "RIGHT_BUTTON" },
     ring_2: { type: "mouse", button: "MIDDLE_BUTTON" },
+    sleeve: { type: "mouse", button: "LEFT_BUTTON" },
   },
   3: {
-    sleeve: { type: "none" },
+    tip:    { type: "none" },
     ring_1: { type: "none" },
     ring_2: { type: "none" },
+    sleeve: { type: "none" },
   },
 };
 
-function defaultAction(pin, modeId) {
-  return JSON.parse(JSON.stringify(DEFAULT_ACTIONS[modeId]?.[pin] || { type: "none" }));
+// ── State ────────────────────────────────────────────────────────────────────
+
+let config        = {};
+let splitterType  = "trrs";
+let activePins    = ["ring_1", "ring_2", "sleeve"];
+let modeSwitchPin = "sleeve";
+let modeCycleHold = 1.0;
+let activeMode    = 0;
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+function defaultAction(pinId, modeId) {
+  return JSON.parse(JSON.stringify(DEFAULT_ACTIONS[modeId]?.[pinId] || { type: "none" }));
 }
 
 function loadDefaults() {
   config = {};
   MODES.forEach(m => {
     config[m.id] = {};
-    ALL_PINS.forEach(p => {
-      config[m.id][p.id] = defaultAction(p.id, m.id);
-    });
+    ALL_PINS.forEach(p => { config[m.id][p.id] = defaultAction(p.id, m.id); });
   });
-  activePins = ["sleeve", "ring_1", "ring_2"];
+  splitterType  = "trrs";
+  activePins    = ["ring_1", "ring_2", "sleeve"];
   modeSwitchPin = "sleeve";
   modeCycleHold = 1.0;
+  activeMode    = 0;
   render();
   setStatus('');
 }
 
 function render() {
+  renderSplitterGrid();
   renderPinSelector();
   renderModeSwitchSelector();
   renderHoldDisplay();
@@ -367,11 +330,46 @@ function render() {
   renderContent();
 }
 
-// ── Pin selector ────────────────────────────────────────────────────────────
+// ── Splitter selector ────────────────────────────────────────────────────────
+
+function renderSplitterGrid() {
+  document.getElementById('splitter-grid').innerHTML = SPLITTERS.map(s =>
+    `<label class="splitter-card ${s.id === splitterType ? 'selected' : ''}" id="splbl-${s.id}">
+      <input type="radio" name="splitter" value="${s.id}" ${s.id === splitterType ? 'checked' : ''} onchange="selectSplitter('${s.id}')">
+      <div class="splitter-card-title">
+        ${s.emoji} ${s.title}
+        ${s.id === splitterType ? '<span class="splitter-check">&#10003;</span>' : ''}
+      </div>
+      <div class="splitter-card-desc">${s.desc}</div>
+      <div class="splitter-card-pins">${s.pins}</div>
+    </label>`
+  ).join('');
+  renderWiringNote();
+}
+
+function selectSplitter(id) {
+  splitterType  = id;
+  const s       = SPLITTERS.find(x => x.id === id);
+  activePins    = [...s.activePins];
+  modeSwitchPin = s.modeSwitchPin;
+  document.querySelectorAll('.splitter-card').forEach(el => el.classList.remove('selected'));
+  document.getElementById('splbl-' + id).classList.add('selected');
+  renderWiringNote();
+  renderPinSelector();
+  renderModeSwitchSelector();
+  renderContent();
+}
+
+function renderWiringNote() {
+  const s = SPLITTERS.find(x => x.id === splitterType);
+  document.getElementById('wiring-note').innerHTML = s ? '<strong>Wiring:</strong> ' + s.wiring : '';
+}
+
+// ── Pin selector ─────────────────────────────────────────────────────────────
 
 function renderPinSelector() {
-  const grid = document.getElementById('pin-selector-grid');
-  grid.innerHTML = ALL_PINS.map(pin => {
+  const pins = ALL_PINS.filter(p => p.splitters.includes(splitterType));
+  document.getElementById('pin-selector-grid').innerHTML = pins.map(pin => {
     const checked = activePins.includes(pin.id);
     return `<label class="pin-checkbox-label ${checked ? 'checked' : ''}" id="lbl-${pin.id}">
       <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePin('${pin.id}', this.checked)">
@@ -387,55 +385,65 @@ function renderPinSelector() {
 function togglePin(pinId, checked) {
   const warn = document.getElementById('pin-warning');
   if (!checked && activePins.length <= 1) {
-    document.querySelector(`#lbl-${pinId} input`).checked = true;
+    document.querySelector('#lbl-' + pinId + ' input').checked = true;
     warn.classList.add('visible');
     setTimeout(() => warn.classList.remove('visible'), 2500);
     return;
   }
   warn.classList.remove('visible');
-
   if (checked) {
     if (!activePins.includes(pinId)) activePins.push(pinId);
     activePins.sort((a, b) => ALL_PINS.findIndex(p => p.id === a) - ALL_PINS.findIndex(p => p.id === b));
   } else {
     activePins = activePins.filter(id => id !== pinId);
-    // If the removed pin was the mode switch, reassign to first active pin
-    if (modeSwitchPin === pinId) {
-      modeSwitchPin = activePins[0];
-    }
+    if (modeSwitchPin === pinId) modeSwitchPin = activePins[0];
   }
-
-  document.querySelectorAll('.pin-checkbox-label').forEach(lbl => lbl.classList.remove('checked'));
-  activePins.forEach(id => document.getElementById(`lbl-${id}`)?.classList.add('checked'));
-
+  document.querySelectorAll('.pin-checkbox-label').forEach(l => l.classList.remove('checked'));
+  activePins.forEach(id => { const el = document.getElementById('lbl-' + id); if (el) el.classList.add('checked'); });
   renderModeSwitchSelector();
-  renderTabs();
   renderContent();
 }
 
-// ── Mode switch selector ──────────────────────────────────────────────────────
+// ── Mode switch selector ─────────────────────────────────────────────────────
 
 function renderModeSwitchSelector() {
-  const row = document.getElementById('mode-switch-row');
-  row.innerHTML = ALL_PINS.filter(p => activePins.includes(p.id)).map(pin => {
-    const sel = pin.id === modeSwitchPin;
-    return `<label class="mode-switch-radio-label ${sel ? 'selected' : ''}" id="mslbl-${pin.id}">
-      <input type="radio" name="mode-switch-pin" value="${pin.id}" ${sel ? 'checked' : ''} onchange="setModeSwitchPin('${pin.id}')">
+  const pins = ALL_PINS.filter(p => p.splitters.includes(splitterType) && activePins.includes(p.id));
+  const isMonoLocked = splitterType === 'mono';
+
+  document.getElementById('mode-switch-row').innerHTML = pins.map(pin => {
+    const isTip     = pin.id === 'tip';
+    const isSelected = pin.id === modeSwitchPin;
+    const disabled  = isMonoLocked && !isTip;
+    return `<label class="mode-switch-radio-label ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''}" id="mslbl-${pin.id}"
+        style="${disabled ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+      <input type="radio" name="mode-switch-pin" value="${pin.id}"
+        ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''}
+        onchange="setModeSwitchPin('${pin.id}')">
       <span class="pin-dot" style="background:${pin.color}"></span>
-      <span>
-        <span style="font-weight:500">${pin.label}</span>
-        <span style="font-family:monospace;font-size:11px;color:var(--text3);margin-left:3px">${pin.badge}</span>
-      </span>
+      <span style="font-weight:500">${pin.label}</span>
+      <span style="font-family:monospace;font-size:11px;color:var(--text3)">${pin.badge}</span>
+      ${isMonoLocked && isTip ? '<span style="font-size:10px;color:var(--blue);margin-left:4px;">(required)</span>' : ''}
     </label>`;
   }).join('');
+
+  // Mono lock notice
+  const existing = document.getElementById('mono-lock-notice');
+  if (existing) existing.remove();
+  if (isMonoLocked) {
+    const notice = document.createElement('div');
+    notice.id = 'mono-lock-notice';
+    notice.className = 'mono-lock-notice';
+    notice.innerHTML = '⚠ With a Mono splitter, <strong>board.TIP is automatically the Mode Switch</strong>. The two switch inputs are TIP (Switch 1) and RING_1 (Switch 2); RING_2 and SLEEVE are driven low as grounds. The firmware sets this up automatically.';
+    document.getElementById('mode-callout').after(notice);
+  }
   renderModeCallout();
-  renderContent(); // refresh pin cards to show/hide mode tag
 }
 
 function setModeSwitchPin(pinId) {
   modeSwitchPin = pinId;
   document.querySelectorAll('.mode-switch-radio-label').forEach(l => l.classList.remove('selected'));
-  document.getElementById(`mslbl-${pinId}`)?.classList.add('selected');
+  const el = document.getElementById('mslbl-' + pinId);
+  if (el) el.classList.add('selected');
   renderModeCallout();
   renderContent();
 }
@@ -443,19 +451,14 @@ function setModeSwitchPin(pinId) {
 function renderModeCallout() {
   const pin = ALL_PINS.find(p => p.id === modeSwitchPin);
   if (!pin) return;
-  const holdSec = modeCycleHold.toFixed(1);
   document.getElementById('mode-callout-text').innerHTML =
-    `<strong>${pin.label}</strong> (<span style="font-family:monospace">${pin.badge}</span>) is the Mode Switch.
-     Hold it for <strong>${holdSec} s</strong> to cycle to the next mode.
-     A short tap still sends its normal HID action.`;
+    '<strong>' + pin.label + '</strong> (<span style="font-family:monospace">' + pin.badge + '</span>) is the Mode Switch. ' +
+    'Hold it for <strong>' + modeCycleHold.toFixed(1) + ' s</strong> to cycle to the next mode. A short press still sends its normal HID action.';
 }
 
 function renderHoldDisplay() {
   const slider = document.getElementById('hold-slider');
-  if (slider) {
-    slider.value = modeCycleHold;
-    updateHoldDisplay(modeCycleHold);
-  }
+  if (slider) { slider.value = modeCycleHold; updateHoldDisplay(modeCycleHold); }
 }
 
 function updateHoldDisplay(val) {
@@ -467,132 +470,144 @@ function updateHoldDisplay(val) {
 // ── Mode tabs ────────────────────────────────────────────────────────────────
 
 function renderTabs() {
-  document.getElementById('mode-tabs').innerHTML = MODES.map(m => `
-    <button class="tab-btn ${m.id === activeMode ? 'active' : ''}" onclick="setMode(${m.id})">
+  document.getElementById('mode-tabs').innerHTML = MODES.map(m =>
+    `<button class="tab-btn ${m.id === activeMode ? 'active' : ''}" onclick="setMode(${m.id})">
       <span class="dot" style="background:${m.color}"></span>${m.name}
       <span style="font-size:11px;color:var(--text3)">(${m.led} LED)</span>
-    </button>`).join('');
+    </button>`
+  ).join('');
 }
 
 function setMode(id) { activeMode = id; renderTabs(); renderContent(); }
 
-// ── Pin action cards ─────────────────────────────────────────────────────────
+// ── Pin action cards ──────────────────────────────────────────────────────────
+
+function isActionConfigured(action) {
+  if (!action || action.type === 'none') return null; // neutral — intentional no-action
+  if (action.type === 'keyboard') return (action.keys && action.keys.length > 0);
+  if (action.type === 'consumer') return !!action.code;
+  if (action.type === 'mouse')    return !!action.button;
+  return false;
+}
 
 function renderContent() {
-  const m = activeMode;
-  const pinDefs = ALL_PINS.filter(p => activePins.includes(p.id));
-
-  if (pinDefs.length === 0) {
+  const m    = activeMode;
+  const pins = ALL_PINS.filter(p => p.splitters.includes(splitterType) && activePins.includes(p.id));
+  if (pins.length === 0) {
     document.getElementById('mode-content').innerHTML =
-      `<div class="info-box">No pins selected. Choose at least one input pin above.</div>`;
+      '<div class="info-box">No pins selected. Choose at least one input pin in Step 1.</div>';
     return;
   }
-
-  document.getElementById('mode-content').innerHTML = pinDefs.map(pin => {
-    const action = config[m][pin.id];
+  document.getElementById('mode-content').innerHTML = pins.map(pin => {
+    const action    = config[m][pin.id];
     const isModePin = pin.id === modeSwitchPin;
-    return `<div class="pin-card">
+    const configured = isActionConfigured(action);
+    // configured=true → green, configured=false → pink, configured=null (none) → neutral
+    const cardClass  = configured === true  ? 'card pin-card-configured'
+                     : configured === false ? 'card pin-card-incomplete'
+                     : 'card';
+    const statusBadge = configured === true
+      ? '<span class="card-status-badge ok">&#10003; Ready</span>'
+      : configured === false
+      ? '<span class="card-status-badge warn">&#9888; Incomplete — add a key or select an action</span>'
+      : '';
+    return `<div class="${cardClass}" style="margin-bottom:12px">
       <div class="pin-title">
         <span class="pin-dot" style="background:${pin.color};width:10px;height:10px;border-radius:50%;display:inline-block"></span>
-        ${pin.label} switch
+        ${pin.label}
         <span class="pin-badge">${pin.badge}</span>
-        ${isModePin ? `<span class="mode-pin-tag">⟳ Mode Switch</span>` : ''}
+        ${isModePin ? '<span class="mode-pin-tag">&#x27F3; Mode Switch</span>' : ''}
+        ${statusBadge}
       </div>
       ${renderFields(m, pin.id, action)}
     </div>`;
   }).join('');
 }
 
-function renderFields(mId, pin, action) {
+function renderFields(mId, pinId, action) {
   const typeSelect = `<div class="row">
     <label>Action type</label>
     <div class="field">
-      <select onchange="setType(${mId},'${pin}',this.value)">
-        <option value="keyboard"  ${action.type==='keyboard'  ? 'selected' : ''}>Keyboard key(s)</option>
-        <option value="consumer"  ${action.type==='consumer'  ? 'selected' : ''}>Media control</option>
-        <option value="mouse"     ${action.type==='mouse'     ? 'selected' : ''}>Mouse button</option>
-        <option value="none"      ${action.type==='none'      ? 'selected' : ''}>No action</option>
+      <select onchange="setType(${mId},'${pinId}',this.value)">
+        <option value="keyboard" ${action.type==='keyboard' ? 'selected' : ''}>Keyboard key(s)</option>
+        <option value="consumer" ${action.type==='consumer' ? 'selected' : ''}>Media control</option>
+        <option value="mouse"    ${action.type==='mouse'    ? 'selected' : ''}>Mouse button</option>
+        <option value="none"     ${action.type==='none'     ? 'selected' : ''}>No action</option>
       </select>
     </div></div>`;
-
   let detail = '';
   if (action.type === 'keyboard') {
     const keys = action.keys || [];
     detail = `<div class="row"><label>Keys</label><div class="field">
-      <div class="key-list" id="kl-${mId}-${pin}">
-        ${keys.map((k, i) => `<div class="key-tag">${k}<button onclick="removeKey(${mId},'${pin}',${i})" title="Remove">×</button></div>`).join('')}
+      <div class="key-list" id="kl-${mId}-${pinId}">
+        ${keys.map((k, i) => `<div class="key-tag">${k}<button onclick="removeKey(${mId},'${pinId}',${i})" title="Remove">&times;</button></div>`).join('')}
         ${keys.length === 0 ? '<span style="font-size:12px;color:var(--text3)">No keys — add one below</span>' : ''}
       </div>
       <div class="add-key-row">
-        <select id="kadd-${mId}-${pin}">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
-        <button class="btn btn-sm add" onclick="addKey(${mId},'${pin}')">+ Add</button>
+        <select id="kadd-${mId}-${pinId}">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
+        <button class="btn btn-sm" onclick="addKey(${mId},'${pinId}')">+ Add</button>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-top:5px">Keys are pressed together (combo). Max 6.</div>
     </div></div>`;
   } else if (action.type === 'consumer') {
     detail = `<div class="row"><label>Control</label><div class="field">
-      <select onchange="setField(${mId},'${pin}','code',this.value)">
+      <select onchange="setField(${mId},'${pinId}','code',this.value)">
         ${CONSUMER_CODES.map(c => `<option ${action.code === c ? 'selected' : ''}>${c}</option>`).join('')}
       </select></div></div>`;
   } else if (action.type === 'mouse') {
     detail = `<div class="row"><label>Button</label><div class="field">
-      <select onchange="setField(${mId},'${pin}','button',this.value)">
+      <select onchange="setField(${mId},'${pinId}','button',this.value)">
         ${MOUSE_BUTTONS.map(b => `<option ${action.button === b ? 'selected' : ''}>${b}</option>`).join('')}
       </select></div></div>`;
   }
   return typeSelect + detail;
 }
 
-function setType(mId, pin, type) {
+function setType(mId, pinId, type) {
   const defaults = {
     keyboard: { type: 'keyboard', keys: ['A'] },
     consumer: { type: 'consumer', code: 'PLAY_PAUSE' },
-    mouse:    { type: 'mouse', button: 'LEFT_BUTTON' },
-    none:     { type: 'none' }
+    mouse:    { type: 'mouse',    button: 'LEFT_BUTTON' },
+    none:     { type: 'none' },
   };
-  config[mId][pin] = JSON.parse(JSON.stringify(defaults[type]));
+  config[mId][pinId] = JSON.parse(JSON.stringify(defaults[type]));
   renderContent();
 }
 
-function setField(mId, pin, field, val) { config[mId][pin][field] = val; }
+function setField(mId, pinId, field, val) { config[mId][pinId][field] = val; }
 
-function addKey(mId, pin) {
-  const sel = document.getElementById(`kadd-${mId}-${pin}`);
-  if (!config[mId][pin].keys) config[mId][pin].keys = [];
-  if (config[mId][pin].keys.length >= 6) { setStatus('Maximum 6 keys per combo.'); return; }
-  config[mId][pin].keys.push(sel.value);
+function addKey(mId, pinId) {
+  const sel = document.getElementById('kadd-' + mId + '-' + pinId);
+  if (!config[mId][pinId].keys) config[mId][pinId].keys = [];
+  if (config[mId][pinId].keys.length >= 6) { setStatus('Maximum 6 keys per combo.'); return; }
+  config[mId][pinId].keys.push(sel.value);
   renderContent();
 }
 
-function removeKey(mId, pin, idx) {
-  config[mId][pin].keys.splice(idx, 1);
+function removeKey(mId, pinId, idx) {
+  config[mId][pinId].keys.splice(idx, 1);
   renderContent();
 }
 
-// ── Export ───────────────────────────────────────────────────────────────────
+// ── Export ────────────────────────────────────────────────────────────────────
 
 function downloadConfigPy() {
-  // Build modes object containing only active pins
   const modesOut = {};
   MODES.forEach(m => {
     modesOut[m.id] = {};
-    activePins.forEach(pin => {
-      modesOut[m.id][pin] = config[m.id][pin];
-    });
+    activePins.forEach(pin => { modesOut[m.id][pin] = config[m.id][pin]; });
   });
-
   const out = {
-    version: 1,
-    active_pins: activePins,
+    version:         1,
+    splitter_type:   splitterType,
+    active_pins:     activePins,
     mode_switch_pin: modeSwitchPin,
     mode_cycle_hold: parseFloat(modeCycleHold.toFixed(1)),
-    modes: modesOut,
+    modes:           modesOut,
   };
-
-  const pyContent = `CONFIG = ${JSON.stringify(out, null, 2)}`;
-  const blob = new Blob([pyContent], { type: 'text/x-python' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const blob = new Blob(['CONFIG = ' + JSON.stringify(out, null, 2)], { type: 'text/x-python' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
   a.download = 'config.py';
   a.click();
   setStatus('config.py downloaded. Drag it to your CIRCUITPY drive.');
