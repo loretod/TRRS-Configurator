@@ -8,16 +8,19 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eeecea;
-    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #67665f;
     --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
     --radius: 8px; --radius-lg: 12px;
     --blue: #378add; --green: #1D9E75; --purple: #7F77DD; --coral: #D85A30;
+    /* AA-contrast text variants of the accent colours, for coloured text on light/tinted backgrounds */
+    --blue-text: #1a63ad; --green-text: #16775a; --coral-text: #b8431d;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #1e1e1c; --bg2: #2a2a28; --bg3: #333330;
-      --text: #f0ede8; --text2: #a0a09a; --text3: #666662;
+      --text: #f0ede8; --text2: #a0a09a; --text3: #9e9d95;
       --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --blue-text: #6aa9e6; --green-text: #2fc796; --coral-text: #f08a64;
     }
   }
   body { font-family: system-ui, -apple-system, sans-serif; font-size: 15px; color: var(--text); background: var(--bg3); min-height: 100vh; }
@@ -41,7 +44,7 @@
   }
   .pin-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .pin-badge { font-size: 11px; font-weight: 400; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 7px; color: var(--text2); font-family: monospace; }
-  .mode-pin-tag { font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66; border-radius: 4px; padding: 2px 7px; color: var(--blue); white-space: nowrap; }
+  .mode-pin-tag { font-size: 10px; font-weight: 500; background: #378add22; border: 0.5px solid #378add66; border-radius: 4px; padding: 2px 7px; color: var(--blue-text); white-space: nowrap; }
   .row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
   .row label { font-size: 13px; color: var(--text2); min-width: 90px; padding-top: 7px; }
   .row .field { flex: 1; min-width: 160px; }
@@ -77,8 +80,8 @@
   .splitter-card-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
   .splitter-card-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
   .splitter-card-pins { font-size: 11px; font-family: monospace; color: var(--text3); margin-top: 5px; }
-  .splitter-check { color: var(--blue); }
-  .wiring-note { font-size: 12px; color: var(--text2); background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 9px 13px; margin-bottom: 12px; line-height: 1.7; }
+  .splitter-check { color: var(--blue-text); }
+  .wiring-note { display: none; } /* deprecated: wiring now shown in per-card info popovers */
 
   /* Pin checkboxes */
   .pin-selector-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
@@ -89,7 +92,7 @@
   .pin-checkbox-label .pin-name { font-weight: 500; }
   .pin-checkbox-label .pin-mono { font-family: monospace; font-size: 11px; color: var(--text3); margin-left: 2px; }
   .pin-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .pin-warning { margin-top: 10px; font-size: 12px; color: var(--coral); display: none; }
+  .pin-warning { margin-top: 10px; font-size: 12px; color: var(--coral-text); display: none; }
   .pin-warning.visible { display: block; }
 
   /* Mode switch */
@@ -114,29 +117,115 @@
     font-size: 11px; font-weight: 500; border-radius: 4px;
     padding: 2px 8px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
   }
-  .card-status-badge.ok   { background: #1d9e7522; color: #1d9e75; border: 0.5px solid #1d9e7555; }
-  .card-status-badge.warn { background: #d85a3022; color: #d85a30; border: 0.5px solid #d85a3055; }
+  .card-status-badge.ok   { background: #1d9e7522; color: var(--green-text); border: 0.5px solid #1d9e7555; }
+  .card-status-badge.warn { background: #d85a3022; color: var(--coral-text); border: 0.5px solid #d85a3055; }
 
-  /* Mono lock notice */
+  /* Mono lock notice (legacy block style, retained but no longer rendered as a banner) */
   .mono-lock-notice {
-    font-size: 11px; color: #d85a30; background: #d85a3011;
+    font-size: 11px; color: var(--coral-text); background: #d85a3011;
     border: 0.5px solid #d85a3055; border-radius: var(--radius);
     padding: 7px 11px; margin-top: 8px; line-height: 1.5;
   }
+
+  /* ── Accessibility: visible keyboard focus everywhere ── */
+  a:focus-visible, button:focus-visible, select:focus-visible,
+  input:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px;
+  }
+  /* Cards wrap their real radio/checkbox; surface focus on the card */
+  .splitter-card:focus-within,
+  .pin-checkbox-label:focus-within,
+  .mode-switch-radio-label:focus-within {
+    outline: 2px solid var(--blue); outline-offset: 2px;
+  }
+  .visually-hidden {
+    position: absolute !important; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+  a { color: var(--blue-text); }
+
+  /* ── Respect reduced-motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+
+  /* ── Intro video embed ── */
+  .video-embed {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg); overflow: hidden;
+    border: 0.5px solid var(--border); background: var(--bg2); margin-bottom: 1.5rem;
+  }
+  .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ── Info-icon button + popover ── */
+  .info-btn {
+    flex-shrink: 0; width: 20px; height: 20px; padding: 0; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; font-family: serif;
+    border-radius: 50%; cursor: pointer;
+    background: var(--bg3); color: var(--text2); border: 0.5px solid var(--border2);
+  }
+  .info-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .info-pop {
+    width: min(380px, calc(100vw - 2rem)); margin: auto; padding: 0;
+    border: 0.5px solid var(--border2); border-radius: var(--radius-lg);
+    background: var(--bg); color: var(--text); box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  }
+  .info-pop::backdrop { background: rgba(0,0,0,0.35); }
+  .info-pop-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 14px; border-bottom: 0.5px solid var(--border);
+  }
+  .info-pop-head h3 { font-size: 14px; font-weight: 600; margin: 0; }
+  .info-pop-body { padding: 12px 14px; font-size: 12px; color: var(--text2); line-height: 1.7; }
+  .info-pop-body strong { color: var(--text); }
+  .info-pop-close {
+    flex-shrink: 0; background: var(--bg2); border: 0.5px solid var(--border2);
+    border-radius: var(--radius); color: var(--text); cursor: pointer;
+    font-size: 13px; padding: 4px 10px; font-family: inherit;
+  }
+  .info-pop-close:hover { background: var(--bg3); }
+
+  /* ── Splitter card image ── */
+  .splitter-card-img {
+    display: block; width: 100%; max-width: 180px; height: auto;
+    margin: 10px 0 2px; border-radius: var(--radius);
+    border: 0.5px solid var(--border); background: #000;
+  }
+  .splitter-card-link { font-weight: 500; }
+  .splitter-card-title .info-btn { margin-left: auto; }
+
+  /* ── Footer ── */
+  .page-footer {
+    margin-top: 2rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border);
+    text-align: center; font-size: 13px;
+  }
+  .page-footer a {
+    display: inline-flex; align-items: center; gap: 7px;
+    color: var(--text2); text-decoration: none;
+  }
+  .page-footer a:hover { color: var(--text); text-decoration: underline; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🎧 TRRS Trinkey Configurator</h1>
+  <h1><span aria-hidden="true">🎧</span> TRRS Trinkey Configurator</h1>
   <p class="subtitle">Configure input switches connected via TRRS jack with an audio splitter, then download the config file to your board.</p>
+
+  <div class="video-embed">
+    <iframe
+      src="https://www.youtube-nocookie.com/embed/vyD9MBjAhcI?start=7"
+      title="TRRS Trinkey Configurator — introduction and walkthrough video"
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen></iframe>
+  </div>
 
   <div class="info-box">
     This tool generates a <code>config.py</code> file for use with the matching <code>code.py</code> on an Adafruit TRRS Trinkey.
     The <code>board.TIP</code> pin is normally set as output-low to serve as ground. Connect your switches between TIP and the input pins.
     To cycle through modes, press and hold the designated <strong>Mode Switch</strong> for the configured hold duration.
-  </div>
-  <div class="info-box">
-    <p>The Shrub Hub by Makers Making Change is a well documented open source project that supports this configuration. Visit its <a href="https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0" target="_blank">project page</a> to learn more and request this device.</p>
   </div>
 
   <hr class="section-divider">
@@ -145,11 +234,10 @@
   <div class="card">
     <h2>Step 1 — Select your splitter type</h2>
     <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Choose the splitter you are using. This sets which pins are available as switch inputs. You can still adjust individual pins manually below.</p>
-    <div class="splitter-grid" id="splitter-grid"></div>
-    <div class="wiring-note" id="wiring-note"></div>
+    <div class="splitter-grid" id="splitter-grid" role="radiogroup" aria-label="Splitter type"></div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">Active switch inputs — adjust if needed:</p>
     <div class="pin-selector-grid" id="pin-selector-grid"></div>
-    <div class="pin-warning" id="pin-warning">⚠ At least one input pin must be selected.</div>
+    <div class="pin-warning" id="pin-warning" role="alert">⚠ At least one input pin must be selected.</div>
   </div>
 
   <!-- Step 2: Mode switch -->
@@ -158,7 +246,7 @@
     <p style="font-size:13px;color:var(--text2);margin-bottom:4px;">
       One switch is designated to cycle through modes. Hold it down for the set duration to advance to the next mode. Its regular HID action still works on a short press.
     </p>
-    <div class="mode-switch-row" id="mode-switch-row"></div>
+    <div class="mode-switch-row" id="mode-switch-row" role="radiogroup" aria-label="Mode switch"></div>
     <div class="mode-callout" id="mode-callout">
       <span class="mode-callout-icon">💡</span>
       <span id="mode-callout-text"></span>
@@ -167,7 +255,7 @@
       <label for="hold-slider">Hold duration</label>
       <div class="hold-slider-wrap">
         <input type="range" id="hold-slider" min="0.2" max="5.0" step="0.1" value="1.0" oninput="updateHoldDisplay(this.value)">
-        <span class="hold-value-badge" id="hold-value-badge">1.0 s</span>
+        <span class="hold-value-badge" id="hold-value-badge" aria-hidden="true">1.0 s</span>
       </div>
     </div>
     <div class="hold-hint">
@@ -180,16 +268,25 @@
   <!-- Step 3: HID config -->
   <h2>Step 3 — Configure HID actions per mode</h2>
   <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;">Assign a keyboard, media, or mouse action to each active switch for each mode. The NeoPixel LED indicates the current mode.</p>
-  <div class="tabs" id="mode-tabs"></div>
-  <div id="mode-content"></div>
+  <div class="tabs" id="mode-tabs" role="tablist" aria-label="Mode to configure"></div>
+  <div id="mode-content" role="tabpanel" aria-label="HID actions for the selected mode" tabindex="0"></div>
 
   <hr class="section-divider">
 
   <div class="actions">
-    <button class="btn btn-primary" onclick="downloadConfigPy()">Download config.py</button>
-    <button class="btn" onclick="loadDefaults()">Reset to defaults</button>
+    <button type="button" class="btn btn-primary" onclick="downloadConfigPy()">Download config.py</button>
+    <button type="button" class="btn" onclick="loadDefaults()">Reset to defaults</button>
   </div>
-  <div class="status" id="status"></div>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <footer class="page-footer">
+    <a href="https://github.com/loretod/TRRS-Configurator" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      View this project on GitHub
+    </a>
+  </footer>
 </div>
 
 <script>
@@ -210,12 +307,19 @@ const ALL_PINS = [
   { id: "sleeve", label: "Switch 3", badge: "board.SLEEVE", color: "#2aaa72", splitters: ["trrs", "headset"] },
 ];
 
+const SHRUB_HUB_URL = "https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0";
+const IMG_SHRUB = "data:image/jpeg;base64,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3bMblfToa2MGrcez+E+XStZvv2598VnptGasGINVjeKNycVj9aUjcg1a1SROzcKkjyregZ4T4SOAHBHpXMtMpU710uQ4VgdmRSPwqcqcvpXk2byrAkV7JgPjnWLN7CpZyPQ3pWak+QqJWz1rMGpWkSpzG9WOLC1VU4IxU2dvOoXjIvgbHnUTeteM2Tt0rDJkYKBk+VRVoZ4iAu5PL1rT6prLWzNb27DvRs0g+76D19a81XWliBgsny3J5h09F/vWhzWOtdujGOvNCSTknJPOvKUqjQpSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlAr3evKUGaSMnI7eVZ96GPUH0NQ0qe0dRMS4HxHFdjZPxWcBPPu1/SuNhccQVz4TsfSusgISKNFbIVFGfOteNz8/ryylP2leMRisWOW2rwnNX7YT09BFSA1GBXucc6dpScXKps7elVQwzvUvFlSzMERRlmbkBS3qLZnfhluxwvTfJ6Cuf1TWGkD29s2Izs7jm/8AtXmra19Y4re1ylvyLH4pPfyHpWorDWu3TjHT2vKUqrQpSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlB7Vm21G5tdo5PD/CdxVWlCztvbfWoZ/DOndN0ZOX4VZMudwS69GBrmakjmkiOUdl9jV5u/1lril9OjSQE7YqUEttXPjVbsLgSAf6Rmozf3TLwmeTHvU/5Ff8LopbiC1HFNIFI3C9T7CtHqGqzX2EPgiByEHX1PmapFixJJJJ6mvKrdWtM4mSlKVVcpSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlApSlB//9k=";
+const IMG_MONO  = "data:image/jpeg;base64,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";
+
 const SPLITTERS = [
   {
     id: "trrs",
-    title: "TRRS Splitter/ Shrub Hub",
+    title: "TRRS Splitter",
     emoji: "🎧",
     desc: "Standard TRRS Y-splitter. Supports up to 3 switches.",
+    link: { url: SHRUB_HUB_URL, label: "Shrub Hub", before: "Used by the ", after: "." },
+    image: IMG_SHRUB,
+    imageAlt: "The Shrub Hub: a small teal 3D-printed USB switch interface with a TRRS jack and a button.",
     pins: "SW1 \u2192 RING_1 \u00b7 SW2 \u2192 RING_2 \u00b7 SW3 \u2192 SLEEVE",
     activePins: ["ring_1", "ring_2", "sleeve"],
     modeSwitchPin: "sleeve",
@@ -225,14 +329,17 @@ const SPLITTERS = [
     id: "mono",
     title: "Mono (Stereo\u21922\u00d7TS) Splitter",
     emoji: "🔌",
-    desc: "Stereo (3.5mm TRS) Y-splitter (e.g. Amazon B096XNHTH3). Splits one stereo plug into 2 jacks for 2 switches.",
+    desc: "Stereo-to-mono Y-splitter (e.g. Amazon B096XNHTH3). Splits into 2 TS jacks for 2 switches.",
+    image: IMG_MONO,
+    imageAlt: "A stereo 3.5 mm plug splitting into two mono jacks, one red and one white.",
     pins: "SW1 \u2192 TIP \u00b7 SW2 \u2192 RING_1",
     activePins: ["tip", "ring_1"],
     modeSwitchPin: "tip",
-    wiring: "<strong>RING_2 and SLEEVE</strong> are driven low as grounds by the firmware. This splitter terminates in a 3-conductor stereo (TRS) plug, so its two switch jacks land on separate conductors: the <strong>white jack</strong> connects to TIP (Switch 1) and the <strong>red jack</strong> connects to RING_1 (Switch 2). Both are clean, independent inputs because the TRS plug only grounds the sleeve. \u26a0\ufe0f <strong>The TIP switch is automatically used as the Mode Switch</strong> \u2014 hold it to cycle modes; a short press still sends its normal HID action.",
+    wiring: "<strong>RING_1, RING_2 and SLEEVE</strong> are all driven low as grounds by the firmware. The <strong>white jack</strong> connects to TIP (Switch 1). The <strong>red jack</strong> connects to RING_1 (Switch 2). Each switch shorts its jack\u2019s Tip to Sleeve. \u26a0\ufe0f <strong>The TIP switch is automatically used as the Mode Switch</strong> \u2014 this is required because the TS plug barrel physically shorts RING_1 to ground, making it unreliable as a mode switch input.",
   },
   {
     id: "headset",
+    hidden: true,  // temporarily hidden from Step 1; functionality retained
     title: "Headphone + Mic Splitter",
     emoji: "🎤",
     desc: "TRRS to TRS headphone + TRS mic. Supports up to 3 switches.",
@@ -333,18 +440,45 @@ function render() {
 // ── Splitter selector ────────────────────────────────────────────────────────
 
 function renderSplitterGrid() {
-  document.getElementById('splitter-grid').innerHTML = SPLITTERS.map(s =>
-    `<label class="splitter-card ${s.id === splitterType ? 'selected' : ''}" id="splbl-${s.id}">
-      <input type="radio" name="splitter" value="${s.id}" ${s.id === splitterType ? 'checked' : ''} onchange="selectSplitter('${s.id}')">
+  const visible = SPLITTERS.filter(s => !s.hidden);
+
+  const cards = visible.map(s => {
+    const isSel  = s.id === splitterType;
+    const popId  = 'wiring-pop-' + s.id;
+    const linkHtml = s.link
+      ? `<div class="splitter-card-desc" style="margin-top:4px">${s.link.before || ''}<a class="splitter-card-link" href="${s.link.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.link.label}</a>${s.link.after || ''}</div>`
+      : '';
+    const imgHtml = s.image
+      ? `<img class="splitter-card-img" src="${s.image}" alt="${s.imageAlt || ''}">`
+      : '';
+    return `<label class="splitter-card ${isSel ? 'selected' : ''}" id="splbl-${s.id}">
+      <input type="radio" name="splitter" value="${s.id}" aria-label="${s.title}" ${isSel ? 'checked' : ''} onchange="selectSplitter('${s.id}')">
       <div class="splitter-card-title">
-        ${s.emoji} ${s.title}
-        ${s.id === splitterType ? '<span class="splitter-check">&#10003;</span>' : ''}
+        <span>${s.emoji} ${s.title}</span>
+        ${isSel ? '<span class="splitter-check" aria-hidden="true">&#10003;</span>' : ''}
+        <button type="button" class="info-btn" popovertarget="${popId}"
+          aria-label="Wiring details for ${s.title}" onclick="event.stopPropagation()">i</button>
       </div>
       <div class="splitter-card-desc">${s.desc}</div>
+      ${linkHtml}
+      ${imgHtml}
       <div class="splitter-card-pins">${s.pins}</div>
-    </label>`
-  ).join('');
-  renderWiringNote();
+    </label>`;
+  }).join('');
+
+  // Wiring popovers (kept outside the labels so they live cleanly in the top layer)
+  const pops = visible.map(s => {
+    const popId = 'wiring-pop-' + s.id;
+    return `<div id="${popId}" class="info-pop" popover role="dialog" aria-label="Wiring for ${s.title}">
+      <div class="info-pop-head">
+        <h3>Wiring — ${s.title}</h3>
+        <button type="button" class="info-pop-close" popovertarget="${popId}" popovertargetaction="hide">Close</button>
+      </div>
+      <div class="info-pop-body">${s.wiring}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('splitter-grid').innerHTML = cards + pops;
 }
 
 function selectSplitter(id) {
@@ -352,17 +486,10 @@ function selectSplitter(id) {
   const s       = SPLITTERS.find(x => x.id === id);
   activePins    = [...s.activePins];
   modeSwitchPin = s.modeSwitchPin;
-  document.querySelectorAll('.splitter-card').forEach(el => el.classList.remove('selected'));
-  document.getElementById('splbl-' + id).classList.add('selected');
-  renderWiringNote();
+  renderSplitterGrid();
   renderPinSelector();
   renderModeSwitchSelector();
   renderContent();
-}
-
-function renderWiringNote() {
-  const s = SPLITTERS.find(x => x.id === splitterType);
-  document.getElementById('wiring-note').innerHTML = s ? '<strong>Wiring:</strong> ' + s.wiring : '';
 }
 
 // ── Pin selector ─────────────────────────────────────────────────────────────
@@ -414,27 +541,38 @@ function renderModeSwitchSelector() {
     const isTip     = pin.id === 'tip';
     const isSelected = pin.id === modeSwitchPin;
     const disabled  = isMonoLocked && !isTip;
+    const showInfo  = isMonoLocked && isTip;  // Step 2 caution lives here in mono mode
     return `<label class="mode-switch-radio-label ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''}" id="mslbl-${pin.id}"
         style="${disabled ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-      <input type="radio" name="mode-switch-pin" value="${pin.id}"
+      <input type="radio" name="mode-switch-pin" value="${pin.id}" aria-label="${pin.label} (${pin.badge})"
         ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''}
         onchange="setModeSwitchPin('${pin.id}')">
       <span class="pin-dot" style="background:${pin.color}"></span>
       <span style="font-weight:500">${pin.label}</span>
       <span style="font-family:monospace;font-size:11px;color:var(--text3)">${pin.badge}</span>
-      ${isMonoLocked && isTip ? '<span style="font-size:10px;color:var(--blue);margin-left:4px;">(required)</span>' : ''}
+      ${showInfo ? '<span style="font-size:10px;color:var(--blue-text);margin-left:4px;">(required)</span>' : ''}
+      ${showInfo ? `<button type="button" class="info-btn" popovertarget="mono-tip-pop"
+          aria-label="Why board.TIP must be the Mode Switch" onclick="event.stopPropagation()">i</button>` : ''}
     </label>`;
   }).join('');
 
-  // Mono lock notice
-  const existing = document.getElementById('mono-lock-notice');
+  // Remove any previous mono caution popover, then add it for mono mode
+  const existing = document.getElementById('mono-tip-pop');
   if (existing) existing.remove();
   if (isMonoLocked) {
-    const notice = document.createElement('div');
-    notice.id = 'mono-lock-notice';
-    notice.className = 'mono-lock-notice';
-    notice.innerHTML = '⚠ With a Mono splitter, <strong>board.TIP is automatically the Mode Switch</strong>. The two switch inputs are TIP (Switch 1) and RING_1 (Switch 2); RING_2 and SLEEVE are driven low as grounds. The firmware sets this up automatically.';
-    document.getElementById('mode-callout').after(notice);
+    const pop = document.createElement('div');
+    pop.id = 'mono-tip-pop';
+    pop.className = 'info-pop';
+    pop.setAttribute('popover', '');
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Why board.TIP must be the Mode Switch');
+    pop.innerHTML =
+      '<div class="info-pop-head"><h3>Switch 1 must be the Mode Switch</h3>' +
+      '<button type="button" class="info-pop-close" popovertarget="mono-tip-pop" popovertargetaction="hide">Close</button></div>' +
+      '<div class="info-pop-body">With a Mono splitter, <strong>board.TIP must be the Mode Switch</strong>. ' +
+      'The TS plug barrel physically shorts RING_1 to ground, so only TIP can reliably detect a clean ' +
+      'press-and-hold for mode switching. The firmware enforces this automatically.</div>';
+    document.getElementById('mode-switch-row').after(pop);
   }
   renderModeCallout();
 }
@@ -463,7 +601,10 @@ function renderHoldDisplay() {
 
 function updateHoldDisplay(val) {
   modeCycleHold = parseFloat(val);
-  document.getElementById('hold-value-badge').textContent = parseFloat(val).toFixed(1) + ' s';
+  const txt = parseFloat(val).toFixed(1) + ' s';
+  document.getElementById('hold-value-badge').textContent = txt;
+  const slider = document.getElementById('hold-slider');
+  if (slider) slider.setAttribute('aria-valuetext', txt);
   renderModeCallout();
 }
 
@@ -471,14 +612,27 @@ function updateHoldDisplay(val) {
 
 function renderTabs() {
   document.getElementById('mode-tabs').innerHTML = MODES.map(m =>
-    `<button class="tab-btn ${m.id === activeMode ? 'active' : ''}" onclick="setMode(${m.id})">
-      <span class="dot" style="background:${m.color}"></span>${m.name}
+    `<button type="button" role="tab" id="modetab-${m.id}"
+       aria-selected="${m.id === activeMode}" aria-controls="mode-content" tabindex="${m.id === activeMode ? '0' : '-1'}"
+       class="tab-btn ${m.id === activeMode ? 'active' : ''}" onclick="setMode(${m.id})" onkeydown="tabKeydown(event,${m.id})">
+      <span class="dot" style="background:${m.color}" aria-hidden="true"></span>${m.name}
       <span style="font-size:11px;color:var(--text3)">(${m.led} LED)</span>
     </button>`
   ).join('');
 }
 
-function setMode(id) { activeMode = id; renderTabs(); renderContent(); }
+function setMode(id) { activeMode = id; renderTabs(); renderContent(); document.getElementById('modetab-' + id)?.focus(); }
+
+// Arrow-key navigation between mode tabs (WAI-ARIA tabs pattern)
+function tabKeydown(e, id) {
+  const n = MODES.length;
+  let next = null;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (id + 1) % n;
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (id - 1 + n) % n;
+  else if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = n - 1;
+  if (next !== null) { e.preventDefault(); setMode(next); }
+}
 
 // ── Pin action cards ──────────────────────────────────────────────────────────
 
@@ -526,9 +680,9 @@ function renderContent() {
 
 function renderFields(mId, pinId, action) {
   const typeSelect = `<div class="row">
-    <label>Action type</label>
+    <label id="lbl-type-${mId}-${pinId}">Action type</label>
     <div class="field">
-      <select onchange="setType(${mId},'${pinId}',this.value)">
+      <select aria-label="Action type" onchange="setType(${mId},'${pinId}',this.value)">
         <option value="keyboard" ${action.type==='keyboard' ? 'selected' : ''}>Keyboard key(s)</option>
         <option value="consumer" ${action.type==='consumer' ? 'selected' : ''}>Media control</option>
         <option value="mouse"    ${action.type==='mouse'    ? 'selected' : ''}>Mouse button</option>
@@ -540,23 +694,23 @@ function renderFields(mId, pinId, action) {
     const keys = action.keys || [];
     detail = `<div class="row"><label>Keys</label><div class="field">
       <div class="key-list" id="kl-${mId}-${pinId}">
-        ${keys.map((k, i) => `<div class="key-tag">${k}<button onclick="removeKey(${mId},'${pinId}',${i})" title="Remove">&times;</button></div>`).join('')}
+        ${keys.map((k, i) => `<div class="key-tag">${k}<button type="button" onclick="removeKey(${mId},'${pinId}',${i})" aria-label="Remove key ${k}">&times;</button></div>`).join('')}
         ${keys.length === 0 ? '<span style="font-size:12px;color:var(--text3)">No keys — add one below</span>' : ''}
       </div>
       <div class="add-key-row">
-        <select id="kadd-${mId}-${pinId}">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
-        <button class="btn btn-sm" onclick="addKey(${mId},'${pinId}')">+ Add</button>
+        <select id="kadd-${mId}-${pinId}" aria-label="Key to add">${ALL_KEYS.map(k => `<option>${k}</option>`).join('')}</select>
+        <button type="button" class="btn btn-sm" onclick="addKey(${mId},'${pinId}')">+ Add</button>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-top:5px">Keys are pressed together (combo). Max 6.</div>
     </div></div>`;
   } else if (action.type === 'consumer') {
     detail = `<div class="row"><label>Control</label><div class="field">
-      <select onchange="setField(${mId},'${pinId}','code',this.value)">
+      <select aria-label="Media control" onchange="setField(${mId},'${pinId}','code',this.value)">
         ${CONSUMER_CODES.map(c => `<option ${action.code === c ? 'selected' : ''}>${c}</option>`).join('')}
       </select></div></div>`;
   } else if (action.type === 'mouse') {
     detail = `<div class="row"><label>Button</label><div class="field">
-      <select onchange="setField(${mId},'${pinId}','button',this.value)">
+      <select aria-label="Mouse button" onchange="setField(${mId},'${pinId}','button',this.value)">
         ${MOUSE_BUTTONS.map(b => `<option ${action.button === b ? 'selected' : ''}>${b}</option>`).join('')}
       </select></div></div>`;
   }
