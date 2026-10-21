@@ -73,9 +73,9 @@
 
   /* Splitter selector */
   .splitter-grid { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px 0; }
-  .splitter-card { flex: 1; min-width: 180px; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; user-select: none; transition: background 0.1s; position: relative; }
+  .splitter-card { flex: 1; min-width: 180px; background: var(--bg2); border: 2px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; user-select: none; transition: background 0.1s, border-color 0.1s, box-shadow 0.1s; position: relative; }
   .splitter-card:hover { background: var(--bg3); }
-  .splitter-card.selected { background: var(--bg); border-color: var(--blue); }
+  .splitter-card.selected { background: #378add26; border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
   .splitter-card input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
   .splitter-card-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
   .splitter-card-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
@@ -401,9 +401,9 @@ const DEFAULT_ACTIONS = {
 // ── State ────────────────────────────────────────────────────────────────────
 
 let config        = {};
-let splitterType  = "trrs";
-let activePins    = ["ring_1", "ring_2", "sleeve"];
-let modeSwitchPin = "sleeve";
+let splitterType  = "mono";
+let activePins    = ["tip", "ring_1"];
+let modeSwitchPin = "tip";
 let modeCycleHold = 1.0;
 let activeMode    = 0;
 
@@ -419,9 +419,9 @@ function loadDefaults() {
     config[m.id] = {};
     ALL_PINS.forEach(p => { config[m.id][p.id] = defaultAction(p.id, m.id); });
   });
-  splitterType  = "trrs";
-  activePins    = ["ring_1", "ring_2", "sleeve"];
-  modeSwitchPin = "sleeve";
+  splitterType  = "mono";
+  activePins    = ["tip", "ring_1"];
+  modeSwitchPin = "tip";
   modeCycleHold = 1.0;
   activeMode    = 0;
   render();
@@ -494,6 +494,20 @@ function selectSplitter(id) {
 
 // ── Pin selector ─────────────────────────────────────────────────────────────
 
+// Switch number follows the pin's position in the SELECTED splitter's wiring
+// order, so the same physical pin can be labelled differently per splitter.
+// e.g. RING_1 is "Switch 1" on a TRRS splitter but "Switch 2" on the mono
+// splitter (where TIP is Switch 1). Falls back to the pin's static label.
+function pinLabel(pinId) {
+  const s = SPLITTERS.find(x => x.id === splitterType);
+  if (s) {
+    const idx = s.activePins.indexOf(pinId);
+    if (idx !== -1) return "Switch " + (idx + 1);
+  }
+  const p = ALL_PINS.find(x => x.id === pinId);
+  return p ? p.label : pinId;
+}
+
 function renderPinSelector() {
   const pins = ALL_PINS.filter(p => p.splitters.includes(splitterType));
   document.getElementById('pin-selector-grid').innerHTML = pins.map(pin => {
@@ -502,7 +516,7 @@ function renderPinSelector() {
       <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePin('${pin.id}', this.checked)">
       <span class="pin-dot" style="background:${pin.color}"></span>
       <span>
-        <span class="pin-name">${pin.label}</span>
+        <span class="pin-name">${pinLabel(pin.id)}</span>
         <span class="pin-mono">${pin.badge}</span>
       </span>
     </label>`;
@@ -544,11 +558,11 @@ function renderModeSwitchSelector() {
     const showInfo  = isMonoLocked && isTip;  // Step 2 caution lives here in mono mode
     return `<label class="mode-switch-radio-label ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''}" id="mslbl-${pin.id}"
         style="${disabled ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-      <input type="radio" name="mode-switch-pin" value="${pin.id}" aria-label="${pin.label} (${pin.badge})"
+      <input type="radio" name="mode-switch-pin" value="${pin.id}" aria-label="${pinLabel(pin.id)} (${pin.badge})"
         ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''}
         onchange="setModeSwitchPin('${pin.id}')">
       <span class="pin-dot" style="background:${pin.color}"></span>
-      <span style="font-weight:500">${pin.label}</span>
+      <span style="font-weight:500">${pinLabel(pin.id)}</span>
       <span style="font-family:monospace;font-size:11px;color:var(--text3)">${pin.badge}</span>
       ${showInfo ? '<span style="font-size:10px;color:var(--blue-text);margin-left:4px;">(required)</span>' : ''}
       ${showInfo ? `<button type="button" class="info-btn" popovertarget="mono-tip-pop"
@@ -590,7 +604,7 @@ function renderModeCallout() {
   const pin = ALL_PINS.find(p => p.id === modeSwitchPin);
   if (!pin) return;
   document.getElementById('mode-callout-text').innerHTML =
-    '<strong>' + pin.label + '</strong> (<span style="font-family:monospace">' + pin.badge + '</span>) is the Mode Switch. ' +
+    '<strong>' + pinLabel(pin.id) + '</strong> (<span style="font-family:monospace">' + pin.badge + '</span>) is the Mode Switch. ' +
     'Hold it for <strong>' + modeCycleHold.toFixed(1) + ' s</strong> to cycle to the next mode. A short press still sends its normal HID action.';
 }
 
@@ -668,7 +682,7 @@ function renderContent() {
     return `<div class="${cardClass}" style="margin-bottom:12px">
       <div class="pin-title">
         <span class="pin-dot" style="background:${pin.color};width:10px;height:10px;border-radius:50%;display:inline-block"></span>
-        ${pin.label}
+        ${pinLabel(pin.id)}
         <span class="pin-badge">${pin.badge}</span>
         ${isModePin ? '<span class="mode-pin-tag">&#x27F3; Mode Switch</span>' : ''}
         ${statusBadge}
