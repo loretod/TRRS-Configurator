@@ -173,3 +173,6 @@ To change your switch assignments at any time, simply open the configurator agai
 - [CircuitPython Library Bundle](https://circuitpython.org/libraries)
 - [Welcome to CircuitPython (beginner guide)](https://learn.adafruit.com/welcome-to-circuitpython)
 - [Makers Making Change — Shrub Hub](https://www.makersmakingchange.com/product/shrub-hub-usb-switch-interface/01tJR000009NpUTYA0)
+
+## AI Assistance Disclosure
+Portions of this project, including the CircuitPython firmware (`code.py`), website, and documentation were developed with the help of Claude Code. Claude Code was used to draft and refactor code, suggest approaches, and help with debugging. All AI-generated code was reviewed, edited, and tested on the actual hardware (Adafruit TRRS Trinkey) before being included. Design decisions, accessibility requirements, and final responsibility for the code remain with this author.
